@@ -20,6 +20,7 @@ int main() {
     }
     int w = I.width();
     int h = I.height();
+    cout <<w<<" x "<<h<<endl;
 
     openWindow(w, h);
     display(I);
