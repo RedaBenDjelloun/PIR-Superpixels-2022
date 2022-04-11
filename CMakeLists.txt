@@ -7,5 +7,8 @@ find_package(Imagine REQUIRED)
 project(Superpixels)
 
 add_executable(Superpixels
-               main.cpp)
+               main.cpp
+               energie.cpp
+               energie.h)
+
 ImagineUseModules(Superpixels Images)
