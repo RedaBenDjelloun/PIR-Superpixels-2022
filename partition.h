@@ -9,3 +9,10 @@ public:
     Partition(int K); //
     ~Partition();
 };
+class Point{
+public:
+    int i;
+    int j;
+};
+bool voisin(int i, int j, Point P);
+Point Coord(int k, int w);
