@@ -9,6 +9,8 @@ project(Superpixels)
 add_executable(Superpixels
                main.cpp
                energie.cpp
-               energie.h)
+               energie.h
+               partition.h
+               partition.cpp)
 
 ImagineUseModules(Superpixels Images)
