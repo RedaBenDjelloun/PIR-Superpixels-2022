@@ -5,15 +5,16 @@ using namespace std;
 #include "partition.h"
 #include "energie.h"
 
-/// **** Paramètres
+/// **** Paramètres ****
 
-// Nombre de superpixels
-const int Kw = 4;
-const int Kh = 3;
-const int K = Kw*Kh;
+// Taille des boîtes de superpixels
+const int R = 24; // Taille recommandée : R = 5 pixels par bloc
+
+// Taille des patchs pour le terme de frontières de l'énergie
+const int Np = 3;
 
 // Nombre de couleurs
-const int Ncol = 12;
+const int Ncol = 12; // Nombre de paniers recommandé : 5 par channel soit 125 paniers au total
 
 /// **** Couleurs ****
 
@@ -58,11 +59,31 @@ int main() {
 
     /// *** Partition selon la grille initiale
 
-    Partition P(w,h,Kw,Kh);
+    Partition P(I);
     P.draw();
 
-    //P.print(0,0);
+    //P.print_s(0,0);
     P.testGrille();
+    //click();
+
+    /// **** Transfert de blocs ****
+
+    //P.transferBlock(P.Nw() - R,P.Nh() - R,R,R,1);
+    //clearWindow();
+    //display(I);
+    //P.draw();
+    //click();
+
+    /// **** Terme de couleurs
+    P.remplir_c();
+    //P.print_c();
+    int k = 0;
+    P.draw_c(k);
+    cout<<"Histogramme du superpixel "<<k<<endl;
+
+
+
+    /// **** Fin ****
     endGraphics();
     return 0;
 }

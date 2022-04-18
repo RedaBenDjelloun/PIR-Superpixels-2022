@@ -4,16 +4,43 @@
 
 // Constructeur
 
-Partition::Partition(int w_, int h_, int Kw_, int Kh_){
-    w = w_;
-    h = h_;
-    Kw = Kw_;
-    Kh = Kh_;
+Partition::Partition(Image<Color> I_){
+    I = I_.clone();
+    w = I_.width();
+    h = I_.height();
+    //Initialisation de s
     s = new int[w*h];
-    for (int i = 0; i < w; i++){
-        for (int j = 0; j < h; j++){
-            set(i, j, 1 + i/Nw() + (j/Nh())*Kw); // s contient des valeurs entre 1 et K
+    for (int x = 0; x < w; x++){
+        for (int y = 0; y < h; y++){
+            set_s(x, y, x/Nw() + (y/Nh())*Kw); // s contient des valeurs entre 0 et K-1, qui numérotent les superpixels
         }
+    }
+    // Initialisation de c
+    for (int k = 0; k < K; k++){
+        for (int r = 0; r < J; r++){
+            for (int g = 0; g < J; g++){
+                for (int b = 0; b < J; b++){
+                    set_c(k,r,g,b,0);
+                }
+            }
+        }
+    }
+    // Initialisation de Zc
+    for (int k = 0; k < K; k++){
+        Zc[k] = 0;
+    }
+    //Initialisation de b
+    b = new int[K*w*h];
+    for (int k = 0; k < K; k++){
+        for (int x = 0; x < w; x++){
+            for (int y = 0; y < h; y++){
+                set_b(k,x,y,0);
+            }
+        }
+    }
+    // Initialisation de Zb
+    for (int k = 0; k < K; k++){
+        Zb[k] = 0;
     }
 }
 
@@ -22,7 +49,7 @@ Partition::~Partition(){
     delete[] s;
 }
 
-// Accesseur
+// Accesseurs
 
 int Partition::getw(){
     return w;
@@ -30,12 +57,77 @@ int Partition::getw(){
 int Partition::geth(){
     return h;
 }
-int Partition::get(int i, int j){
-    return  s[i +j*w];
+
+
+Color Partition::get_I(int x, int y){
+    return I(x,y);
 }
-void Partition::set(int i, int j, int k){
-    s[i + j*w] = k;
+int Partition::get_Ir(int x, int y){
+    return int(I(x,y).r());
 }
+int Partition::get_Ig(int x, int y){
+    return int(I(x,y).g());
+}
+int Partition::get_Ib(int x, int y){
+    return int(I(x,y).b());
+}
+
+
+int Partition::get_s(int x, int y){
+    return  s[x +y*w];
+}
+void Partition::set_s(int x, int y, int k){
+    s[x + y*w] = k;
+}
+
+
+int Partition::get_c(int k, int r, int g, int b){
+    return c[k][r][g][b];
+}
+void Partition::set_c(int k, int r, int g, int b, int valeur){
+    c[k][r][g][b] = valeur;
+}
+void Partition::incr_c(int k, int r, int g, int b, int increment){
+    c[k][r][g][b] += increment;
+}
+int Partition::get_Zc(int k){
+    return Zc[k];
+}
+void Partition::calcul_Zc(int k){
+    int Z = 0;
+    for (int r = 0; r < J; r++){
+        for (int g = 0; g < J; g++){
+            for (int b = 0; b < J; b++){
+                 Z += get_c(k,r,g,b);
+            }
+        }
+    }
+    Zc[k] = Z;
+}
+
+
+int Partition::get_b(int k, int x, int y){
+    return b[x + w*(y + h*k)]; // array 3D aplati
+}
+void Partition::set_b(int k, int x, int y, int valeur){
+    b[x + w*(y + h*k)] = valeur;
+}
+void Partition::incr_b(int k, int x, int y, int increment){
+    b[x + w*(y + h*k)] += increment;
+}
+int Partition::get_Zb(int k){
+    return Zb[k];
+}
+void Partition::calcul_Zb(int k){
+    int Z = 0;
+    for (int x = 0; x < w; x++){
+        for (int y = 0; y < h; y++){
+            Z += get_b(k,x,y);
+        }
+    }
+    Zb[k]=Z;
+}
+
 
 // Fonctions
 
@@ -50,20 +142,24 @@ int Partition::Nh(){
 void Partition::draw(){
     for (int i = 0; i < w-1; i++){
         for (int j = 0; j < h-1; j ++){
-            if (get(i+1, j) != get(i,j)){
-                drawPoint(i,j,WHITE);
+            if (get_s(i+1, j) != get_s(i,j)){
+                drawPoint(i-1,j,WHITE);
+                drawPoint(i,j,BLACK);
+                drawPoint(i+1,j,WHITE);
             }
-            if (get(i, j+1) != get(i,j)){
-                drawPoint(i,j,WHITE);
+            if (get_s(i, j+1) != get_s(i,j)){
+                drawPoint(i,j-1,WHITE);
+                drawPoint(i,j,BLACK);
+                drawPoint(i,j+1,WHITE);
             }
         }
     }
 }
 
-void Partition::print(int xk, int yk){
+void Partition::print_s(int xk, int yk){
     for (int x = xk*Nw(); x < (xk+1)*Nw(); x++){
         for (int y = yk*Nh(); y < (yk+1)*Nh(); y++){
-            cout<<get(x,y)<<endl;
+            cout<<get_s(x,y)<<endl;
         }
     }
 }
@@ -74,7 +170,7 @@ bool Partition::testGrille(){
         for (int yk = 0; yk < Kh; yk++){
             for (int x = xk*Nw()+1; x < (xk+1)*Nw(); x++){
                 for (int y = yk*Nh()+1; y < (yk+1)*Nh(); y++){
-                    if (get(x,y) != get(x-1,y-1)){
+                    if (get_s(x,y) != get_s(x-1,y-1)){
                         pass = false;
                         cout <<"Problème en x = "<<x<<" et y = "<<y<<endl;
                     }
@@ -86,9 +182,67 @@ bool Partition::testGrille(){
     if (pass){
         cout<<"testGrille réussi"<<endl;
     }
+    else{
+        cout<<"Attention, le tableau s ne contient pas ce qu'il est censé contenir"<<endl;
+    }
     return pass;
 }
 
+void Partition::transferBlock(int x1, int y1, int wb, int hb, int k){
+    for (int x = x1; x < min(x1+wb,w); x++){
+        for (int y = y1; y < min(y1 + hb,h); y++){
+            set_s(x,y,k);
+        }
+    }
+}
+
+void Partition::remplir_c(){
+    int w = getw();
+    int h = geth();
+    int k, r, g, b;
+    for (int x = 0; x < w; x++){
+        for (int y = 0; y < h; y++){
+            k = get_s(x,y);
+            r = get_Ir(x,y)/Nj; // entier entre 0 et J-1 correspondant à l'indice r du panier
+            g = get_Ig(x,y)/Nj;
+            b = get_Ib(x,y)/Nj;
+            incr_c(k,r,g,b,1); // On incrémente de 1 le panier (r,g,b) du superpixel k où tombe le pixel (x,y)
+        }
+    }
+}
+
+void Partition::print_c(){
+    for (int k = 0; k < K; k++){
+        for (int r = 0; r < J; r++){
+            for (int g = 0; g < J; g++){
+                for (int b = 0; b < J; b++){
+                    cout <<"k = "<<k<<", r = "<<r<<", g = "<<g<<", b = "<<b<<", valeur de c : "<<get_c(k,r,g,b)<<endl;
+                }
+            }
+        }
+    }
+}
+
+void Partition::draw_c(int k){
+    int barWidth = 8;
+    int barHeight = h;
+    Color barColor = RED;
+    Window Histo = openWindow(J*J*J*barWidth,h);
+    setActiveWindow(Histo);
+    calcul_Zc(k);
+    int Z = get_Zc(k);
+    cout<<"Zc = "<<Z<<endl;
+    for (int r = 0; r < J; r++){
+        for (int g = 0; g < J; g++){
+            for (int b = 0; b < J; b++){
+                barHeight = (get_c(k,r,g,b)*h)/Z;
+                barColor = Color((r+1)*Nj/2, (g+1)*Nj/2, (b+1)*Nj/2);
+                fillRect(barWidth*(r + J*(g + J*b)),h,barWidth,-barHeight,barColor);
+                //fillRect(0,0,100,100,RED);
+            }
+        }
+    }
+}
 
 /// **** Point ****
 
