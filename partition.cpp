@@ -47,6 +47,7 @@ Partition::Partition(Image<Color> I_){
 // Destructeur
 Partition::~Partition(){
     delete[] s;
+    delete[] b;
 }
 
 // Accesseurs

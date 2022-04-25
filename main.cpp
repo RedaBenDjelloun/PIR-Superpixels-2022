@@ -51,11 +51,11 @@ int main() {
 
     /// **** Transfert de blocs ****
 
-    //P.transferBlock(P.Nw() - R,P.Nh() - R,R,R,1);
-    //clearWindow();
-    //display(I);
-    //P.draw();
-    //click();
+//    P.transferBlock(P.Nw() - R,P.Nh() - R,2*R,2*R,1);
+//    clearWindow();
+//    display(I);
+//    P.draw();
+//    click();
 
     /// **** Terme de couleurs
     P.remplir_c();
