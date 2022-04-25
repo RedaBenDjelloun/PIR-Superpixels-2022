@@ -17,6 +17,6 @@ double H(Partition P){
     return H;
 }
 /// **** Terme de frontières ****
-double G(Partition P){}
+//double G(Partition P){}
 /// **** Hill Climbing ****
 
