@@ -243,18 +243,3 @@ void Partition::draw_c(int k){
         }
     }
 }
-
-/// **** Point ****
-
-// Fonctions
-
-Point Coord(int k, int w){
-    Point P;
-    P.i = k % w;
-    P.j = k - P.i*w;
-    return P;
-}
-
-bool voisin(int i, int j, Point P){
-    return (abs(P.i-i)<=1 or abs(P.j-j)<1);
-}
