@@ -39,8 +39,11 @@ Partition::Partition(Image<Color> I_){
         }
     }
     // Initialisation de Zb
-    for (int k = 0; k < K; k++){
-        Zb[k] = 0;
+    Zb = new int[w*h];
+    for (int x = 0; x < w; x++){
+        for(int y = 0; y < h; y ++){
+            Zb[x+y*w] = 0;
+        }
     }
 }
 
@@ -116,17 +119,14 @@ void Partition::set_b(int k, int x, int y, int valeur){
 void Partition::incr_b(int k, int x, int y, int increment){
     b[x + w*(y + h*k)] += increment;
 }
-int Partition::get_Zb(int k){
-    return Zb[k];
+int Partition::get_Zb(int x, int y){
+    return Zb[x +y*w];
 }
-void Partition::calcul_Zb(int k){
+void Partition::calcul_Zb(int x, int y){
     int Z = 0;
-    for (int x = 0; x < w; x++){
-        for (int y = 0; y < h; y++){
-            Z += get_b(k,x,y);
-        }
-    }
-    Zb[k]=Z;
+    for(int k=0;k<K;k++)
+        Z += get_b(k,x,y);
+    Zb[x +y*w] = Z;
 }
 
 
@@ -212,6 +212,22 @@ void Partition::remplir_c(){
     }
 }
 
+void Partition::remplir_b(){
+    int w = getw();
+    int h = geth();
+    int k;
+    for (int x = 0; x < w; x++){
+        for (int y = 0; y < h; y++){
+            for (int i=max(0,x-Np/2);i<=min(w,x+Np/2);i++){
+                for (int j=max(0,y-Np/2);j<=min(h,y+Np/2);j++){
+                    k = get_s(i,j);
+                    incr_b(k,x,y,1);
+                 }
+            }
+        }
+    }
+}
+
 void Partition::print_c(){
     for (int k = 0; k < K; k++){
         for (int r = 0; r < J; r++){
@@ -243,4 +259,19 @@ void Partition::draw_c(int k){
             }
         }
     }
+}
+void Partition::draw_b(int x, int y){
+    int barWidth = 30;
+    int barHeight = h;
+    Color barColor = RED;
+    Window Histo = openWindow(K*barWidth,h);
+    setActiveWindow(Histo);
+    calcul_Zb(x,y);
+    int Z = get_Zb(x,y);
+    cout<<"Zb = "<<Z<<endl;
+    for (int k = 0; k < K; k++){
+        barHeight = (get_b(k,x,y)*h)/Z;
+        fillRect(barWidth*k,h,barWidth,-barHeight,barColor);
+    }
+
 }
