@@ -6,6 +6,11 @@ using namespace std;
 using namespace Imagine;
 
 /// **** Paramètres
+// Taille des boîtes de superpixels
+const int R = 24; // Taille recommandée : R = 5 pixels par bloc
+
+// Taille des patchs pour le terme de frontières de l'énergie
+const int Np = 3;
 
 // Nombre de superpixels
 const int Kw = 4;
@@ -32,7 +37,7 @@ class Partition{
     int Zc[K];
     // Histogramme de superpixels voisins (non normalisé) et liste des facteurs de normalisation
     int* b;
-    int Zb[K];
+    int* Zb;
 
 public:
     // Constructeur
@@ -60,11 +65,11 @@ public:
     int get_Zc(int k);
     void calcul_Zc(int k);
 
-    int get_b(int k, int x, int y);
+    int get_b(int k,int x, int y);
     void set_b(int k, int x, int y, int valeur);
     void incr_b(int k, int x, int y, int increment);
-    int get_Zb(int k);
-    void calcul_Zb(int k);
+    int get_Zb(int x, int y);
+    void calcul_Zb(int x, int y);
 
     //Fonctions
     int Nw(); // Nombre de pixels horizontaux par case de la grille
@@ -75,23 +80,9 @@ public:
     void transferBlock(int x1, int y1, int wb, int hb, int k); // Transférer les pixels dans le bloc sélectionné au superpixel k
 
     void remplir_c();
+    void remplir_b();
     void print_c();
     void draw_c(int k);
+    void draw_b(int x, int y);
 };
 
-// Fonctions
-
-/// *** Point ***
-
-// Classe
-
-class Point{
-public:
-    int i;
-    int j;
-};
-
-// Fonctions
-
-bool voisin(int i, int j, Point P);
-Point Coord(int k, int w);
