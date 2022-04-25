@@ -60,7 +60,7 @@ int main() {
 
     /// **** Terme de frontière
     P.remplir_b();
-    int x=1, y=1;
+    int x=P.Nw(), y=P.Nh();
     P.draw_b(x,y);
 
     /// **** Fin ****
