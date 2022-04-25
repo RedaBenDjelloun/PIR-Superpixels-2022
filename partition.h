@@ -8,8 +8,8 @@ using namespace Imagine;
 /// **** Paramètres
 
 // Nombre de superpixels
-const int Kw = 20;
-const int Kh = 10;
+const int Kw = 4;
+const int Kh = 3;
 const int K = Kw*Kh; // Nombre de superpixels recommandé : K = 200 superpixels sur une image 481x321
 
 // Nombre de paniers de couleurs par channel

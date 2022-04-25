@@ -13,23 +13,6 @@ const int R = 24; // Taille recommandée : R = 5 pixels par bloc
 // Taille des patchs pour le terme de frontières de l'énergie
 const int Np = 3;
 
-// Nombre de couleurs
-const int Ncol = 12; // Nombre de paniers recommandé : 5 par channel soit 125 paniers au total
-
-/// **** Couleurs ****
-
-// Partition des 16 millions de couleurs en un nombre restreint de couleurs
-void PartitionCouleurs(int &r, int &g, int &b){
-    int pas=256/Ncol;
-    r = r%Ncol;
-    g = g%Ncol;
-    b = b%Ncol;
-    r = (2*r+1)*pas/2;
-    g = (2*g+1)*pas/2;
-    b = (2*b+1)*pas/2;
-}
-
-
 /// **** Main ****
 
 int main() {
