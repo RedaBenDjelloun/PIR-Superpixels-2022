@@ -17,7 +17,22 @@ double H(Partition &P){
     }
     return H;
 }
+
 /// **** Terme de frontières ****
-//double G(Partition &P){}
+double G(Partition &P){
+    double G=0;
+    for(int x=0;x<P.getw();x++)
+        for(int y=0;y<P.geth();y++){
+            double Gi=0.;
+            for(int k=0;k<K;k++){
+                int val=P.get_b(k,x,y);
+                Gi+=val*val;
+            }
+            P.calcul_Zb(x,y);
+            if(P.get_Zb(x,y)!=0)
+                G+=Gi/(P.get_Zb(x,y)*P.get_Zb(x,y));
+        }
+    return G;
+}
 /// **** Hill Climbing ****
 
