@@ -53,15 +53,17 @@ int main() {
 //    click();
 
     /// **** Terme de couleurs
-//    P.remplir_c();
-//    int k = 0;
-//    P.draw_c(k);
-//    cout<<"Histogramme du superpixel "<<k<<endl;
+    P.remplir_c();
+    int k = 0;
+    P.draw_c(k);
+    cout<<"Histogramme du superpixel "<<k<<endl;
+
+    cout<<"Terme de couleur = "<<H(P)<<endl;
 
     /// **** Terme de frontière
-    P.remplir_b();
-    int x=P.Nw(), y=P.Nh();
-    P.draw_b(x,y);
+//    P.remplir_b();
+//    int x=P.Nw(), y=P.Nh();
+//    P.draw_b(x,y);
 
     /// **** Fin ****
     endGraphics();
