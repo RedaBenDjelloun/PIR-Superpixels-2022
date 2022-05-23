@@ -1,4 +1,5 @@
 #include "partition.h"
+using namespace std;
 
 /// **** Partition ****
 
@@ -274,4 +275,52 @@ void Partition::draw_b(int x, int y){
         fillRect(barWidth*k,h,barWidth,-barHeight,barColor);
     }
 
+}
+
+bool Partition::connexe(int k){
+    list<Coords<2>> L;
+    bool t[w][h];
+
+    for(int x=0;x<w;x++)
+        for(int y=0;y<h;y++)
+            t[x][y]=false;
+
+    int x=0, y=0, compteur=0;
+
+    do{
+        x=intRandom(0,w);
+        y=intRandom(0,h);
+    } while(get_s(x,y)!=k);
+
+    Coords<2> p(x,y);
+    L.push_back(p);
+    while(L.size()!=0){
+        p = L.back();
+        L.pop_back();
+
+        for (int i=-1;i<2;i+=2){
+
+            if(p[0]>0 and p[0]<w and get_s(p[0]+i,p[1])==k and !t[p[0]+i][p[1]]) {
+                t[p[0]+i][p[1]] = true;
+                L.push_front(Coords<2> (p[0]+i,p[1]));
+                fillRect(p[0]+i,p[1],1,1,RED);
+                compteur+=1;
+            }
+
+            if(p[1]>0 and p[1]<h and get_s(p[0],p[1]+i)==k and !t[p[0]][p[1]+i]){
+                t[p[0]][p[1]+i] = true;
+                L.push_front(Coords<2> (p[0],p[1]+i));
+                fillRect(p[0],p[1]+i,1,1,RED);
+                compteur+=1;
+            }
+
+        }
+    }
+
+    int nbPixel = 0;
+    for(int x=0;x<w;x++)
+        for(int y=0;y<h;y++)
+            if(get_s(x,y)==k) nbPixel+=1;
+
+    return (nbPixel==compteur);
 }

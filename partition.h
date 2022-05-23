@@ -84,5 +84,6 @@ public:
     void print_c();
     void draw_c(int k);
     void draw_b(int x, int y);
+    bool connexe(int k);
 };
 
