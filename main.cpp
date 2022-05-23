@@ -61,9 +61,13 @@ int main() {
     cout<<"Terme de couleur = "<<H(P)<<endl;
 
     /// **** Terme de frontière
-//    P.remplir_b();
-//    int x=P.Nw(), y=P.Nh();
-//    P.draw_b(x,y);
+    P.remplir_b();
+    int x=P.Nw(), y=P.Nh();
+    P.draw_b(x,y);
+
+    cout<<"Histogramme du pixel ("<<x<<","<<y<<")"<<endl;
+
+    cout<<"Terme de frontière = "<<G(P)<<endl;
 
     /// **** Fin ****
     endGraphics();

@@ -15,7 +15,7 @@ double H(Partition &P){
         if(P.get_Zc(k)!=0)
             H+=Hk/(P.get_Zc(k)*P.get_Zc(k));
     }
-    return H;
+    return H/K;
 }
 
 /// **** Terme de frontières ****
@@ -32,7 +32,13 @@ double G(Partition &P){
             if(P.get_Zb(x,y)!=0)
                 G+=Gi/(P.get_Zb(x,y)*P.get_Zb(x,y));
         }
-    return G;
+    return G/(P.getw()*P.geth());
 }
 /// **** Hill Climbing ****
+
+// Trouve la frontière la plus proche du point (x0, y0) et met ses coordonnées dans (xf,yf)
+void rechercheFrontiere(int x0, int y0, int& xf, int& yf){
+    int x, y;
+
+}
 
