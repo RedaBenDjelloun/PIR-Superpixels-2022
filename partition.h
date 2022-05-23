@@ -84,5 +84,8 @@ public:
     void print_c();
     void draw_c(int k);
     void draw_b(int x, int y);
+
+    bool appartientFrontiere(int x, int y);
+    void rechercheFrontiere(int x0, int y0, int& xf, int& yf);
 };
 

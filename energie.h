@@ -15,6 +15,5 @@ double G(Partition &P);
 
 /// **** Hill Climbing ****
 
-void rechercheFrontiere(int x0, int y0, int& xf, int& yf);
 
 

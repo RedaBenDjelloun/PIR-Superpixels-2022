@@ -141,17 +141,10 @@ int Partition::Nh(){
 }
 
 void Partition::draw(){
-    for (int i = 0; i < w-1; i++){
-        for (int j = 0; j < h-1; j ++){
-            if (get_s(i+1, j) != get_s(i,j)){
-                drawPoint(i-1,j,WHITE);
-                drawPoint(i,j,BLACK);
-                drawPoint(i+1,j,WHITE);
-            }
-            if (get_s(i, j+1) != get_s(i,j)){
-                drawPoint(i,j-1,WHITE);
-                drawPoint(i,j,BLACK);
-                drawPoint(i,j+1,WHITE);
+    for (int x = 0; x < w-1; x++){
+        for (int y = 0; y < h-1; y++){
+            if (appartientFrontiere(x,y)){
+                drawPoint(x,y,BLACK);
             }
         }
     }
@@ -274,4 +267,28 @@ void Partition::draw_b(int x, int y){
         fillRect(barWidth*k,h,barWidth,-barHeight,barColor);
     }
 
+}
+
+/// *** Frontières ****
+
+// Indique si le point (x,y) appartient à la frontière de son Superpixel
+bool Partition::appartientFrontiere(int x, int y){
+    bool frontiere = false;
+    // Les pixels à la bordure de l'image sont nécéssairement à la bordure de leur superpixel
+    // donc on ne les teste pas
+    if (x == 0 or x == w or y == 0 or y == h){ // Frontière
+        frontiere = true;
+    }
+    else if ((get_s(x,y) != get_s(x+1,y))   // fronière à droite
+     or (get_s(x,y) != get_s(x-1,y))        // frontière à gauche
+     or (get_s(x,y) != get_s(x,y+1))        // frontière en haut
+     or (get_s(x,y) != get_s(x,y-1))){      // en bas
+        frontiere = true;
+    }
+    return frontiere;
+}
+
+// Trouve la frontière la plus proche du point (x0, y0) et met ses coordonnées dans (xf,yf)
+void Partition::rechercheFrontiere(int x0, int y0, int& xf, int& yf){
+    int x, y;
 }

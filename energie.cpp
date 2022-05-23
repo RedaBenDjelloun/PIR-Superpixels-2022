@@ -36,9 +36,3 @@ double G(Partition &P){
 }
 /// **** Hill Climbing ****
 
-// Trouve la frontière la plus proche du point (x0, y0) et met ses coordonnées dans (xf,yf)
-void rechercheFrontiere(int x0, int y0, int& xf, int& yf){
-    int x, y;
-
-}
-
