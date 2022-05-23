@@ -7,7 +7,7 @@ using namespace Imagine;
 
 /// **** Paramètres
 // Taille des boîtes de superpixels
-const int R = 24; // Taille recommandée : R = 5 pixels par bloc
+const int R = 24; // Taille recommandée : R = 5 pour 200 superpixels, R*R pixels par bloc
 
 // Taille des patchs pour le terme de frontières de l'énergie
 const int Np = 3;
