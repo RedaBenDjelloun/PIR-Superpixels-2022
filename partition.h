@@ -21,6 +21,16 @@ const int K = Kw*Kh; // Nombre de superpixels recommandé : K = 200 superpixels 
 const int J = 5; // Nombre recommandé : 5 par channel soit 125 paniers au total
 const int Nj = 256/J; // Nombre de couleurs par paniers sur un même channel
 
+/// **** Point ****
+
+struct Point{
+    int x;
+    int y;
+
+    Point();
+    Point(int x0,int y0);
+};
+
 /// **** Partition ****
 
 // Classe
@@ -86,6 +96,6 @@ public:
     void draw_b(int x, int y);
 
     bool appartientFrontiere(int x, int y);
-    void rechercheFrontiere(int x0, int y0, int& xf, int& yf);
+    void rechercheFrontiere(Point p0, Point pf);
 };
 

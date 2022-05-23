@@ -1,5 +1,12 @@
 #include "partition.h"
 
+/// **** Point ****
+
+Point::Point(int x0,int y0){
+    x = x0;
+    y = y0;
+}
+
 /// **** Partition ****
 
 // Constructeur
@@ -289,6 +296,11 @@ bool Partition::appartientFrontiere(int x, int y){
 }
 
 // Trouve la frontière la plus proche du point (x0, y0) et met ses coordonnées dans (xf,yf)
-void Partition::rechercheFrontiere(int x0, int y0, int& xf, int& yf){
-    int x, y;
+void Partition::rechercheFrontiere(Point p0, Point pf){
+    vector<Point> pile;
+    pile.push_back(p0);
+    bool trouve = false;
+    while (pile.size() > 0 and not trouve){
+        pile.pop_back();
+    }
 }
