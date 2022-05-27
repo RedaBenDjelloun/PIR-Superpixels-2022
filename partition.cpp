@@ -324,15 +324,15 @@ Point Partition::rechercheFrontiere(Point p0){
     for(int x=0;x<w;x++)
         for(int y=0;y<h;y++)
             t[x][y]=false;
-    vector<Point> file;
+    list<Point> file;
     file.push_back(p0);
     Point current_p = Point(0,0);
     Point candidat = Point(0,0);
     Point pf = Point(0,0);
+    t[current_p.x][current_p.y]=true;
     bool trouve = false;
     while (file.size() > 0 and not trouve){
         current_p= file.back();
-        t[current_p.x][current_p.y] = true;
         drawPoint(candidat, RED);
         file.pop_back();
         if (appartientFrontiere(current_p)){
@@ -343,7 +343,8 @@ Point Partition::rechercheFrontiere(Point p0){
             for (int i = 0; i < 4; i++){
                 candidat = current_p + directions[i];
                 if (appartientImage(candidat) and not t[candidat.x][candidat.y]){
-                    file.insert(file.begin(), candidat);
+                    file.push_front(candidat);
+                    t[candidat.x][candidat.y]=true;
                 }
             }
         }
@@ -374,14 +375,14 @@ bool Partition::connexe(int k){
 
         for (int i=-1;i<2;i+=2){
 
-            if(p[0]>0 and p[0]<w and get_s(p[0]+i,p[1])==k and !t[p[0]+i][p[1]]) {
+            if(p[0]+i>=0 and p[0]+i<=w and get_s(p[0]+i,p[1])==k and !t[p[0]+i][p[1]]) {
                 t[p[0]+i][p[1]] = true;
                 L.push_front(Coords<2> (p[0]+i,p[1]));
                 fillRect(p[0]+i,p[1],1,1,RED);
                 compteur+=1;
             }
 
-            if(p[1]>0 and p[1]<h and get_s(p[0],p[1]+i)==k and !t[p[0]][p[1]+i]){
+            if(p[1]+i>=0 and p[1]+i<=h and get_s(p[0],p[1]+i)==k and !t[p[0]][p[1]+i]){
                 t[p[0]][p[1]+i] = true;
                 L.push_front(Coords<2> (p[0],p[1]+i));
                 fillRect(p[0],p[1]+i,1,1,RED);
@@ -395,6 +396,6 @@ bool Partition::connexe(int k){
     for(int x=0;x<w;x++)
         for(int y=0;y<h;y++)
             if(get_s(x,y)==k) nbPixel+=1;
-
+    if (nbPixel==compteur) cout<<"OUI"<<endl;
     return (nbPixel==compteur);
 }
