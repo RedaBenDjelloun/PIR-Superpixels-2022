@@ -20,6 +20,11 @@ void drawPoint(Point p, Color col){
     drawPoint(p.x,p.y,col);
 }
 
+void drawPointBig(Point p, Color col1, Color col2){
+    drawPoint(p.x,p.y,col1);
+    Point candidat = Point(0,0);
+}
+
 /// **** Partition ****
 
 // Constructeur
@@ -315,15 +320,21 @@ bool Partition::appartientFrontiere(Point p){
 
 // Trouve la frontière la plus proche du point p0 et met ses coordonnées dans pf
 Point Partition::rechercheFrontiere(Point p0){
-    vector<Point> pile;
-    pile.push_back(p0);
+    bool t[w][h];
+    for(int x=0;x<w;x++)
+        for(int y=0;y<h;y++)
+            t[x][y]=false;
+    vector<Point> file;
+    file.push_back(p0);
     Point current_p = Point(0,0);
     Point candidat = Point(0,0);
     Point pf = Point(0,0);
     bool trouve = false;
-    while (pile.size() > 0 and not trouve){
-        current_p= pile.back();
-        pile.pop_back();
+    while (file.size() > 0 and not trouve){
+        current_p= file.back();
+        t[current_p.x][current_p.y] = true;
+        drawPoint(candidat, RED);
+        file.pop_back();
         if (appartientFrontiere(current_p)){
             trouve = true;
             pf = current_p;
@@ -331,8 +342,8 @@ Point Partition::rechercheFrontiere(Point p0){
         else{
             for (int i = 0; i < 4; i++){
                 candidat = current_p + directions[i];
-                if (appartientImage(candidat)){
-                    pile.push_back(candidat);
+                if (appartientImage(candidat) and not t[candidat.x][candidat.y]){
+                    file.insert(file.begin(), candidat);
                 }
             }
         }

@@ -7,10 +7,15 @@ using namespace std;
 
 /// **** Paramètres ****
 
+void InitRandom(){
+    srand((unsigned int) time(0));
+}
+
 /// **** Main ****
 
 int main() {
     /// *** Initialisation
+    InitRandom();
     //Image initiale
     Image<Color> I_;
     if(! load(I_, argc>1? argv[1]: srcPath("starfish.jpg"))) {
@@ -51,36 +56,40 @@ int main() {
 //    P.draw();
 //    click();
 
-    /// **** Terme de couleurs
-    P.remplir_c();
-    int k = 0;
-    P.draw_c(k);
-    cout<<"Histogramme du superpixel "<<k<<endl;
+//    /// **** Terme de couleurs
+//    P.remplir_c();
+//    int k = 0;
+//    P.draw_c(k);
+//    cout<<"Histogramme du superpixel "<<k<<endl;
 
-    cout<<"Terme de couleur = "<<H(P)<<endl;
+//    cout<<"Terme de couleur = "<<H(P)<<endl;
 
-    /// **** Terme de frontière
-    P.remplir_b();
-    int x=P.Nw(), y=P.Nh();
-    P.draw_b(x,y);
+//    /// **** Terme de frontière
+//    P.remplir_b();
+//    int x=P.Nw(), y=P.Nh();
+//    P.draw_b(x,y);
 
-    cout<<"Histogramme du pixel ("<<x<<","<<y<<")"<<endl;
+//    cout<<"Histogramme du pixel ("<<x<<","<<y<<")"<<endl;
 
-    cout<<"Terme de frontière = "<<G(P)<<endl;
+//    cout<<"Terme de frontière = "<<G(P)<<endl;
 
     /// **** Recherche frontiere ****
     setActiveWindow(W1);
     Point p0 = Point(rand()%P.getw(),rand()%P.geth());
+    cout<<"Point de départ : pixel ("<<p0.x<<","<<p0.y<<")"<<endl;
     drawPoint(p0,BLUE);
     Point pf = P.rechercheFrontiere(p0);
     drawPoint(pf,RED);
+    cout<<"Point d'arrivée : pixel ("<<pf.x<<","<<pf.y<<")"<<endl;
     cout<<"Appartenance à la frontière : "<<P.appartientFrontiere(pf)<<endl;
 
-//    P.transferBlock(P.Nw() - R,P.Nh() - R,2*R,2*R,1);
-//    clearWindow();
-//    display(I);
-//    P.draw();
-//    click();
+    int k_pf = P.get_s(pf.x,pf.y);
+    P.transferBlock(pf.x - R/2,pf.y-R/2,R,R,k_pf);
+    clearWindow();
+    display(I);
+    P.draw();
+    drawPoint(pf,RED);
+    click();
 
     /// **** Fin ****
     endGraphics();
