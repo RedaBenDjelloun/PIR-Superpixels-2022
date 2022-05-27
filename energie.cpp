@@ -52,8 +52,9 @@ bool compareTransfertBlock(Partition &P, double H_ini, double G_ini,int x1, int 
     //calcul de H et G
     double H_fin=H(P);
     double G_fin=G(P);
+    if(H_fin+G_fin<H_ini+G_ini)
+        return true;
     //rétablissemeent de P
-
     for (int x = x1; x < min(x1+wb,P.getw()); x++){
         for (int y = y1; y < min(y1 + hb,P.geth()); y++){
             P.set_s(x,y,s[(x-x1)+(y-y1)*wb]);
@@ -68,7 +69,6 @@ bool compareTransfertBlock(Partition &P, double H_ini, double G_ini,int x1, int 
     for(int x=0;x<P.getw();x++)
         for(int y=0;y<P.geth();y++)
             P.calcul_Zb(x,y);
-
-    return(H_fin+G_fin<H_ini+G_ini);
+    return false;
 
 }

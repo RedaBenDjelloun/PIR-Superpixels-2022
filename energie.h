@@ -16,5 +16,5 @@ double G(Partition &P);
 /// **** Hill Climbing ****
 
 /// **** Validation d'un transfert de bloc ****
-bool compareTransferBlock(Partition &P, double H_ini, double G_ini,int x1, int y1, int wb, int hb, int k);
-
+bool compareTransfertBlock(Partition &P, double H_ini, double G_ini,int x1, int y1, int wb, int hb, int k);
+//si la nouvelle partition est plus petite: renvoie vrai
