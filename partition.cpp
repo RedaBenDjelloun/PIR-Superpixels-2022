@@ -16,6 +16,10 @@ Point Point::operator-(Point a){
     return Point(x - a.x, y - a.y);
 }
 
+Point Point::operator* (double lambda){
+    return Point(int(lambda*x), int(lambda*y));
+}
+
 void drawPoint(Point p, Color col){
     drawPoint(p.x,p.y,col);
 }
@@ -333,7 +337,7 @@ Point Partition::rechercheFrontiere(Point p0){
     while (file.size() > 0 and not trouve){
         current_p= file.back();
         t[current_p.x][current_p.y] = true;
-        drawPoint(candidat, RED);
+        drawPoint(current_p, RED);
         file.pop_back();
         if (appartientFrontiere(current_p)){
             trouve = true;
@@ -349,6 +353,19 @@ Point Partition::rechercheFrontiere(Point p0){
         }
     }
     return pf;
+}
+
+void Partition::testVoisins(Point p0, int r_max){
+    drawPoint(p0,RED);
+    for (int r = 0; r < r_max; r++){
+        for (int dir = 0; dir < 4; dir++){
+            Point direction = directions[dir];
+            Point candidat = p0 + direction*double(r);
+            if(appartientImage(candidat)){
+                drawPoint(candidat, RED);
+            }
+        }
+    }
 }
 
 bool Partition::connexe(int k){

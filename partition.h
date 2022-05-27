@@ -31,6 +31,7 @@ struct Point{
     Point(int x0,int y0);
     Point operator+ (Point a);
     Point operator- (Point a);
+    Point operator* (double lambda);
 };
 
 void drawPoint(Point p0, Color col);
@@ -116,6 +117,7 @@ public:
     bool appartientImage(Point p);
     bool appartientFrontiere(Point p);
     Point rechercheFrontiere(Point p0);
+    void testVoisins(Point p0, int r_max);
 
     bool connexe(int k);
 };
