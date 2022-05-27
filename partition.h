@@ -109,5 +109,7 @@ public:
     bool appartientImage(Point p);
     bool appartientFrontiere(Point p);
     Point rechercheFrontiere(Point p0);
+
+    bool connexe(int k);
 };
 
