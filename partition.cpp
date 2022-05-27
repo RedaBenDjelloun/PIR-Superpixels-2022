@@ -7,6 +7,18 @@ Point::Point(int x0,int y0){
     y = y0;
 }
 
+Point Point::operator+(Point a){
+    return Point(x + a.x, y + a.y);
+}
+
+Point Point::operator-(Point a){
+    return Point(x - a.x, y - a.y);
+}
+
+void drawPoint(Point p, Color col){
+    drawPoint(p.x,p.y,col);
+}
+
 /// **** Partition ****
 
 // Constructeur
@@ -150,7 +162,7 @@ int Partition::Nh(){
 void Partition::draw(){
     for (int x = 0; x < w-1; x++){
         for (int y = 0; y < h-1; y++){
-            if (appartientFrontiere(x,y)){
+            if (appartientFrontiere(Point(x,y))){
                 drawPoint(x,y,BLACK);
             }
         }
@@ -278,29 +290,52 @@ void Partition::draw_b(int x, int y){
 
 /// *** Frontières ****
 
-// Indique si le point (x,y) appartient à la frontière de son Superpixel
-bool Partition::appartientFrontiere(int x, int y){
+// Indique si le point p est à l'intérieur de l'image
+bool Partition::appartientImage(Point p){
+    return (p.x >= 0 and p.x < w and p.y >= 0  and p.y < h)? true
+                                                           : false;
+}
+
+// Indique si le point p appartient à la frontière de son Superpixel
+bool Partition::appartientFrontiere(Point p){
     bool frontiere = false;
     // Les pixels à la bordure de l'image sont nécéssairement à la bordure de leur superpixel
     // donc on ne les teste pas
-    if (x == 0 or x == w or y == 0 or y == h){ // Frontière
+    if (p.x == 0 or p.x == w-1 or p.y == 0 or p.y == h-1){ // Frontière
         frontiere = true;
     }
-    else if ((get_s(x,y) != get_s(x+1,y))   // fronière à droite
-     or (get_s(x,y) != get_s(x-1,y))        // frontière à gauche
-     or (get_s(x,y) != get_s(x,y+1))        // frontière en haut
-     or (get_s(x,y) != get_s(x,y-1))){      // en bas
+    else if ((get_s(p.x,p.y) != get_s(p.x+1,p.y))   // fronière à droite
+     or (get_s(p.x,p.y) != get_s(p.x-1,p.y))        // frontière à gauche
+     or (get_s(p.x,p.y) != get_s(p.x,p.y+1))        // frontière en haut
+     or (get_s(p.x,p.y) != get_s(p.x,p.y-1))){      // en bas
         frontiere = true;
     }
     return frontiere;
 }
 
-// Trouve la frontière la plus proche du point (x0, y0) et met ses coordonnées dans (xf,yf)
-void Partition::rechercheFrontiere(Point p0, Point pf){
+// Trouve la frontière la plus proche du point p0 et met ses coordonnées dans pf
+Point Partition::rechercheFrontiere(Point p0){
     vector<Point> pile;
     pile.push_back(p0);
+    Point current_p = Point(0,0);
+    Point candidat = Point(0,0);
+    Point pf = Point(0,0);
     bool trouve = false;
     while (pile.size() > 0 and not trouve){
+        current_p= pile.back();
         pile.pop_back();
+        if (appartientFrontiere(current_p)){
+            trouve = true;
+            pf = current_p;
+        }
+        else{
+            for (int i = 0; i < 4; i++){
+                candidat = current_p + directions[i];
+                if (appartientImage(candidat)){
+                    pile.push_back(candidat);
+                }
+            }
+        }
     }
+    return pf;
 }

@@ -29,7 +29,18 @@ struct Point{
 
     Point();
     Point(int x0,int y0);
+    Point operator+ (Point a);
+    Point operator- (Point a);
 };
+
+void drawPoint(Point p0, Color col);
+
+const Point haut = Point(0,1);
+const Point bas = Point(0,-1);
+const Point gauche = Point(-1,0);
+const Point droite = Point(1,0);
+
+const Point directions[4] = {gauche, bas, droite, haut};
 
 /// **** Partition ****
 
@@ -95,7 +106,8 @@ public:
     void draw_c(int k);
     void draw_b(int x, int y);
 
-    bool appartientFrontiere(int x, int y);
-    void rechercheFrontiere(Point p0, Point pf);
+    bool appartientImage(Point p);
+    bool appartientFrontiere(Point p);
+    Point rechercheFrontiere(Point p0);
 };
 

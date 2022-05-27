@@ -7,7 +7,6 @@ using namespace std;
 
 /// **** Paramètres ****
 
-
 /// **** Main ****
 
 int main() {
@@ -32,7 +31,7 @@ int main() {
     cout <<"Dimensions initiales de l'image : "<<w_<<" x "<<h_<<endl;
     cout <<"Dimensions de l'image réduite : "<<w<<" x "<<h<<endl;
 
-    openWindow(w, h);
+    Window W1 = openWindow(w, h);
     display(I);
 
     /// *** Partition selon la grille initiale
@@ -68,6 +67,20 @@ int main() {
     cout<<"Histogramme du pixel ("<<x<<","<<y<<")"<<endl;
 
     cout<<"Terme de frontière = "<<G(P)<<endl;
+
+    /// **** Recherche frontiere ****
+    setActiveWindow(W1);
+    Point p0 = Point(rand()%P.getw(),rand()%P.geth());
+    drawPoint(p0,BLUE);
+    Point pf = P.rechercheFrontiere(p0);
+    drawPoint(pf,RED);
+    cout<<"Appartenance à la frontière : "<<P.appartientFrontiere(pf)<<endl;
+
+//    P.transferBlock(P.Nw() - R,P.Nh() - R,2*R,2*R,1);
+//    clearWindow();
+//    display(I);
+//    P.draw();
+//    click();
 
     /// **** Fin ****
     endGraphics();
