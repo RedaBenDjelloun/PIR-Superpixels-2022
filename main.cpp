@@ -77,19 +77,20 @@ int main() {
     setActiveWindow(W1);
     Point p0 = Point(rand()%P.getw(),rand()%P.geth());
     cout<<"Point de départ : pixel ("<<p0.x<<","<<p0.y<<")"<<endl;
-    drawPoint(p0,BLUE);
-    Point pf = P.rechercheFrontiere(p0);
-    drawPoint(pf,RED);
-    cout<<"Point d'arrivée : pixel ("<<pf.x<<","<<pf.y<<")"<<endl;
-    cout<<"Appartenance à la frontière : "<<P.appartientFrontiere(pf)<<endl;
+//    drawPoint(p0,BLUE);
+//    Point pf = P.rechercheFrontiere(p0);
+//    drawPoint(pf,RED);
+//    cout<<"Point d'arrivée : pixel ("<<pf.x<<","<<pf.y<<")"<<endl;
+//    cout<<"Appartenance à la frontière : "<<P.appartientFrontiere(pf)<<endl;
+    P.testVoisins(p0,30);
 
-    int k_pf = P.get_s(pf.x,pf.y);
-    P.transferBlock(pf.x - R/2,pf.y-R/2,R,R,k_pf);
-    clearWindow();
-    display(I);
-    P.draw();
-    drawPoint(pf,RED);
-    click();
+//    int k_pf = P.get_s(pf.x,pf.y);
+//    P.transferBlock(pf.x - R/2,pf.y-R/2,R,R,k_pf);
+//    clearWindow();
+//    display(I);
+//    P.draw();
+//    drawPoint(pf,RED);
+//    click();
 
     /// **** Fin ****
     endGraphics();
