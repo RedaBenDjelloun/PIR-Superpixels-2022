@@ -11,6 +11,8 @@ add_executable(Superpixels
                energie.cpp
                energie.h
                partition.h
-               partition.cpp)
+               partition.cpp
+               point.cpp
+               point.h)
 
 ImagineUseModules(Superpixels Images)

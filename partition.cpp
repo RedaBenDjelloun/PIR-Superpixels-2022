@@ -1,38 +1,8 @@
 #include "partition.h"
 using namespace std;
 
-/// **** Point ****
-
-Point::Point(int x0,int y0){
-    x = x0;
-    y = y0;
-}
-
-Point Point::operator+(Point a){
-    return Point(x + a.x, y + a.y);
-}
-
-Point Point::operator-(Point a){
-    return Point(x - a.x, y - a.y);
-}
-
-Point Point::operator* (double lambda){
-    return Point(int(lambda*x), int(lambda*y));
-}
-
-void drawPoint(Point p, Color col){
-    drawPoint(p.x,p.y,col);
-}
-
-void drawPointBig(Point p, Color col1, Color col2){
-    drawPoint(p.x,p.y,col1);
-    Point candidat = Point(0,0);
-}
-
-/// **** Partition ****
-
-// Constructeur
-
+// ******************** Classe ********************
+//******************** Constructeurs, Destructeurs ********************
 Partition::Partition(Image<Color> I_){
     I = I_.clone();
     w = I_.width();
@@ -75,23 +45,17 @@ Partition::Partition(Image<Color> I_){
         }
     }
 }
-
-// Destructeur
 Partition::~Partition(){
     delete[] s;
     delete[] b;
 }
-
-// Accesseurs
-
+//******************** Image I ********************
 int Partition::getw(){
     return w;
 }
 int Partition::geth(){
     return h;
 }
-
-
 Color Partition::get_I(int x, int y){
     return I(x,y);
 }
@@ -104,16 +68,21 @@ int Partition::get_Ig(int x, int y){
 int Partition::get_Ib(int x, int y){
     return int(I(x,y).b());
 }
-
-
+//******************** Tableau s ********************
 int Partition::get_s(int x, int y){
     return  s[x +y*w];
 }
 void Partition::set_s(int x, int y, int k){
     s[x + y*w] = k;
 }
-
-
+void Partition::print_s(int xk, int yk){
+    for (int x = xk*Nw(); x < (xk+1)*Nw(); x++){
+        for (int y = yk*Nh(); y < (yk+1)*Nh(); y++){
+            cout<<get_s(x,y)<<endl;
+        }
+    }
+}
+//******************** Tableau c ********************
 int Partition::get_c(int k, int r, int g, int b){
     return c[k][r][g][b];
 }
@@ -137,8 +106,52 @@ void Partition::calcul_Zc(int k){
     }
     Zc[k] = Z;
 }
-
-
+void Partition::remplir_c(){
+    int w = getw();
+    int h = geth();
+    int k, r, g, b;
+    for (int x = 0; x < w; x++){
+        for (int y = 0; y < h; y++){
+            k = get_s(x,y);
+            r = get_Ir(x,y)/Nj; // entier entre 0 et J-1 correspondant à l'indice r du panier
+            g = get_Ig(x,y)/Nj;
+            b = get_Ib(x,y)/Nj;
+            incr_c(k,r,g,b,1); // On incrémente de 1 le panier (r,g,b) du superpixel k où tombe le pixel (x,y)
+        }
+    }
+}
+void Partition::print_c(){
+    for (int k = 0; k < K; k++){
+        for (int r = 0; r < J; r++){
+            for (int g = 0; g < J; g++){
+                for (int b = 0; b < J; b++){
+                    cout <<"k = "<<k<<", r = "<<r<<", g = "<<g<<", b = "<<b<<", valeur de c : "<<get_c(k,r,g,b)<<endl;
+                }
+            }
+        }
+    }
+}
+void Partition::draw_c(int k){
+    int barWidth = 8;
+    int barHeight = h;
+    Color barColor = RED;
+    Window Histo = openWindow(J*J*J*barWidth,h);
+    setActiveWindow(Histo);
+    calcul_Zc(k);
+    int Z = get_Zc(k);
+    cout<<"Zc = "<<Z<<endl;
+    for (int r = 0; r < J; r++){
+        for (int g = 0; g < J; g++){
+            for (int b = 0; b < J; b++){
+                barHeight = (get_c(k,r,g,b)*h)/Z;
+                barColor = Color((r+1)*Nj/2, (g+1)*Nj/2, (b+1)*Nj/2);
+                fillRect(barWidth*(r + J*(g + J*b)),h,barWidth,-barHeight,barColor);
+                //fillRect(0,0,100,100,RED);
+            }
+        }
+    }
+}
+//******************** Tableau b ********************
 int Partition::get_b(int k, int x, int y){
     return b[x + w*(y + h*k)]; // array 3D aplati
 }
@@ -157,18 +170,43 @@ void Partition::calcul_Zb(int x, int y){
         Z += get_b(k,x,y);
     Zb[x +y*w] = Z;
 }
+void Partition::remplir_b(){
+    int w = getw();
+    int h = geth();
+    int k = 0;
+    for (int x = 0; x < w; x++){
+        for (int y = 0; y < h; y++){
+            for (int i=max(0,x-Np/2);i<=min(w-1,x+Np/2);i++){
+                for (int j=max(0,y-Np/2);j<=min(h-1,y+Np/2);j++){
+                    k = get_s(i,j);
+                    incr_b(k,x,y,1);
+                 }
+            }
+        }
+    }
+}
+void Partition::draw_b(int x, int y){
+    int barWidth = 30;
+    int barHeight = h;
+    Color barColor = RED;
+    Window Histo = openWindow(K*barWidth,h);
+    setActiveWindow(Histo);
+    calcul_Zb(x,y);
+    int Z = get_Zb(x,y);
+    cout<<"Zb = "<<Z<<endl;
+    for (int k = 0; k < K; k++){
+        barHeight = (get_b(k,x,y)*h)/Z;
+        fillRect(barWidth*k,h,barWidth,-barHeight,barColor);
+    }
 
-
-// Fonctions
-
+}
+//******************** Fonctions utiles ********************
 int Partition::Nw(){
     return w/Kw;
 }
-
 int Partition::Nh(){
     return h/Kh;
 }
-
 void Partition::draw(){
     for (int x = 0; x < w-1; x++){
         for (int y = 0; y < h-1; y++){
@@ -178,15 +216,6 @@ void Partition::draw(){
         }
     }
 }
-
-void Partition::print_s(int xk, int yk){
-    for (int x = xk*Nw(); x < (xk+1)*Nw(); x++){
-        for (int y = yk*Nh(); y < (yk+1)*Nh(); y++){
-            cout<<get_s(x,y)<<endl;
-        }
-    }
-}
-
 bool Partition::testGrille(){
     bool pass = true;
     for (int xk = 0; xk < Kw; xk++){
@@ -210,7 +239,6 @@ bool Partition::testGrille(){
     }
     return pass;
 }
-
 void Partition::transferBlock(int x1, int y1, int wb, int hb, int k){
     for (int x = x1; x < min(x1+wb,w); x++){
         for (int y = y1; y < min(y1 + hb,h); y++){
@@ -218,100 +246,17 @@ void Partition::transferBlock(int x1, int y1, int wb, int hb, int k){
         }
     }
 }
-
-void Partition::remplir_c(){
-    int w = getw();
-    int h = geth();
-    int k, r, g, b;
-    for (int x = 0; x < w; x++){
-        for (int y = 0; y < h; y++){
-            k = get_s(x,y);
-            r = get_Ir(x,y)/Nj; // entier entre 0 et J-1 correspondant à l'indice r du panier
-            g = get_Ig(x,y)/Nj;
-            b = get_Ib(x,y)/Nj;
-            incr_c(k,r,g,b,1); // On incrémente de 1 le panier (r,g,b) du superpixel k où tombe le pixel (x,y)
-        }
-    }
-}
-
-void Partition::remplir_b(){
-    int w = getw();
-    int h = geth();
-    int k = 0;
-    for (int x = 0; x < w; x++){
-        for (int y = 0; y < h; y++){
-            for (int i=max(0,x-Np/2);i<=min(w-1,x+Np/2);i++){
-                for (int j=max(0,y-Np/2);j<=min(h-1,y+Np/2);j++){
-                    k = get_s(i,j);
-                    incr_b(k,x,y,1);
-                 }
-            }
-        }
-    }
-}
-
-void Partition::print_c(){
-    for (int k = 0; k < K; k++){
-        for (int r = 0; r < J; r++){
-            for (int g = 0; g < J; g++){
-                for (int b = 0; b < J; b++){
-                    cout <<"k = "<<k<<", r = "<<r<<", g = "<<g<<", b = "<<b<<", valeur de c : "<<get_c(k,r,g,b)<<endl;
-                }
-            }
-        }
-    }
-}
-
-void Partition::draw_c(int k){
-    int barWidth = 8;
-    int barHeight = h;
-    Color barColor = RED;
-    Window Histo = openWindow(J*J*J*barWidth,h);
-    setActiveWindow(Histo);
-    calcul_Zc(k);
-    int Z = get_Zc(k);
-    cout<<"Zc = "<<Z<<endl;
-    for (int r = 0; r < J; r++){
-        for (int g = 0; g < J; g++){
-            for (int b = 0; b < J; b++){
-                barHeight = (get_c(k,r,g,b)*h)/Z;
-                barColor = Color((r+1)*Nj/2, (g+1)*Nj/2, (b+1)*Nj/2);
-                fillRect(barWidth*(r + J*(g + J*b)),h,barWidth,-barHeight,barColor);
-                //fillRect(0,0,100,100,RED);
-            }
-        }
-    }
-}
-void Partition::draw_b(int x, int y){
-    int barWidth = 30;
-    int barHeight = h;
-    Color barColor = RED;
-    Window Histo = openWindow(K*barWidth,h);
-    setActiveWindow(Histo);
-    calcul_Zb(x,y);
-    int Z = get_Zb(x,y);
-    cout<<"Zb = "<<Z<<endl;
-    for (int k = 0; k < K; k++){
-        barHeight = (get_b(k,x,y)*h)/Z;
-        fillRect(barWidth*k,h,barWidth,-barHeight,barColor);
-    }
-
-}
-/// *** Frontières ****
-
-// Indique si le point p est à l'intérieur de l'image
 bool Partition::appartientImage(Point p){
     return (p.x >= 0 and p.x < w and p.y >= 0  and p.y < h)? true
                                                            : false;
 }
-
-// Indique si le point p appartient à la frontière de son Superpixel
 bool Partition::appartientFrontiere(Point p){
     bool frontiere = false;
     // Les pixels à la bordure de l'image sont nécéssairement à la bordure de leur superpixel
     // donc on ne les teste pas
+    // cette bordure ne nous intéresse pas donc on met false
     if (p.x == 0 or p.x == w-1 or p.y == 0 or p.y == h-1){ // Frontière
-        frontiere = true;
+        frontiere = false;
     }
     else if ((get_s(p.x,p.y) != get_s(p.x+1,p.y))   // fronière à droite
      or (get_s(p.x,p.y) != get_s(p.x-1,p.y))        // frontière à gauche
@@ -321,23 +266,22 @@ bool Partition::appartientFrontiere(Point p){
     }
     return frontiere;
 }
-
-// Trouve la frontière la plus proche du point p0 et met ses coordonnées dans pf
 Point Partition::rechercheFrontiere(Point p0){
     bool t[w][h];
     for(int x=0;x<w;x++)
         for(int y=0;y<h;y++)
             t[x][y]=false;
-    vector<Point> file;
+    list<Point> file;
     file.push_back(p0);
     Point current_p = Point(0,0);
     Point candidat = Point(0,0);
     Point pf = Point(0,0);
+    t[current_p.x][current_p.y]=true;
     bool trouve = false;
     while (file.size() > 0 and not trouve){
         current_p= file.back();
         t[current_p.x][current_p.y] = true;
-        drawPoint(current_p, RED);
+        //drawPoint(current_p, RED);
         file.pop_back();
         if (appartientFrontiere(current_p)){
             trouve = true;
@@ -347,27 +291,49 @@ Point Partition::rechercheFrontiere(Point p0){
             for (int i = 0; i < 4; i++){
                 candidat = current_p + directions[i];
                 if (appartientImage(candidat) and not t[candidat.x][candidat.y]){
-                    file.insert(file.begin(), candidat);
+                    file.push_front(candidat);
+                    t[candidat.x][candidat.y]=true;
                 }
             }
         }
     }
     return pf;
 }
-
-void Partition::testVoisins(Point p0, int r_max){
-    drawPoint(p0,RED);
-    for (int r = 0; r < r_max; r++){
-        for (int dir = 0; dir < 4; dir++){
-            Point direction = directions[dir];
-            Point candidat = p0 + direction*double(r);
-            if(appartientImage(candidat)){
-                drawPoint(candidat, RED);
+Point Partition::rechercheFrontiereRapide(Point p0){
+    bool t[w][h];
+    for(int x=0;x<w;x++)
+        for(int y=0;y<h;y++)
+            t[x][y]=false;
+    list<Point> file;
+    file.push_back(p0);
+    Point current_p = Point(0,0);
+    Point candidat = Point(0,0);
+    Point pf = Point(0,0);
+    t[current_p.x][current_p.y]=true;
+    bool trouve = false;
+    int compteur = 0;
+    while (file.size() > 0 and not trouve){
+        current_p= file.back();
+        t[current_p.x][current_p.y] = true;
+        //drawPoint(current_p, RED);
+        file.pop_back();
+        if (appartientFrontiere(current_p)){
+            trouve = true;
+            pf = current_p;
+        }
+        else{
+            for (int i = 0; i < 4; i++){
+                candidat = p0 + (1 + compteur/4)*directions[i];
+                compteur+=1;
+                if (appartientImage(candidat) and not t[candidat.x][candidat.y]){
+                    file.push_front(candidat);
+                    t[candidat.x][candidat.y]=true;
+                }
             }
         }
     }
+    return pf;
 }
-
 bool Partition::connexe(int k){
     list<Coords<2>> L;
     bool t[w][h];
@@ -391,14 +357,14 @@ bool Partition::connexe(int k){
 
         for (int i=-1;i<2;i+=2){
 
-            if(p[0]>0 and p[0]<w and get_s(p[0]+i,p[1])==k and !t[p[0]+i][p[1]]) {
+            if(p[0]+i>=0 and p[0]+i<=w and get_s(p[0]+i,p[1])==k and !t[p[0]+i][p[1]]) {
                 t[p[0]+i][p[1]] = true;
                 L.push_front(Coords<2> (p[0]+i,p[1]));
                 fillRect(p[0]+i,p[1],1,1,RED);
                 compteur+=1;
             }
 
-            if(p[1]>0 and p[1]<h and get_s(p[0],p[1]+i)==k and !t[p[0]][p[1]+i]){
+            if(p[1]+i>=0 and p[1]+i<=h and get_s(p[0],p[1]+i)==k and !t[p[0]][p[1]+i]){
                 t[p[0]][p[1]+i] = true;
                 L.push_front(Coords<2> (p[0],p[1]+i));
                 fillRect(p[0],p[1]+i,1,1,RED);
@@ -412,6 +378,6 @@ bool Partition::connexe(int k){
     for(int x=0;x<w;x++)
         for(int y=0;y<h;y++)
             if(get_s(x,y)==k) nbPixel+=1;
-
+    if (nbPixel==compteur) cout<<"OUI"<<endl;
     return (nbPixel==compteur);
 }

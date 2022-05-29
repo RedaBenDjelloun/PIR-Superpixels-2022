@@ -45,7 +45,7 @@ int main() {
     P.draw();
 
     //P.print_s(0,0);
-    P.testGrille();
+    //P.testGrille();
     //click();
 
     /// **** Transfert de blocs ****
@@ -75,14 +75,30 @@ int main() {
 
     /// **** Recherche frontiere ****
     setActiveWindow(W1);
-    Point p0 = Point(rand()%P.getw(),rand()%P.geth());
-    cout<<"Point de départ : pixel ("<<p0.x<<","<<p0.y<<")"<<endl;
-//    drawPoint(p0,BLUE);
-//    Point pf = P.rechercheFrontiere(p0);
-//    drawPoint(pf,RED);
-//    cout<<"Point d'arrivée : pixel ("<<pf.x<<","<<pf.y<<")"<<endl;
-//    cout<<"Appartenance à la frontière : "<<P.appartientFrontiere(pf)<<endl;
-    P.testVoisins(p0,30);
+    Point p0 = Point(0,0);
+    Point pf = Point(0,0);
+    int k_pf = 0;
+    int old_s[R*R];
+    for (int i = 0; i < 1000; i++){
+        p0 = Point(rand()%P.getw(),rand()%P.geth());
+        //cout<<"Point de départ : pixel ("<<p0.x<<","<<p0.y<<")"<<endl;
+        pf = P.rechercheFrontiereRapide(p0);
+        //cout<<"Point d'arrivée : pixel ("<<pf.x<<","<<pf.y<<")"<<endl;
+        //cout<<"Appartenance à la frontière : "<<P.appartientFrontiere(pf)<<endl;
+        k_pf = P.get_s(pf.x,pf.y);
+        //k_pf = rand()%12;
+        //P.transferBlock(pf.x - R/2,pf.y-R/2,R,R,k_pf);
+        if(compareTransfertBlock(P, H(P), G(P), pf.x - R/2,pf.y-R/2,R,R,k_pf, old_s)){
+            clearWindow();
+            display(I);
+            P.draw();
+            cout<<"Terme de couleur = "<<H(P)<<endl;
+            cout<<"Terme de frontière = "<<G(P)<<endl;
+        }
+    }
+    clearWindow();
+    display(I);
+    P.draw();
 
 //    int k_pf = P.get_s(pf.x,pf.y);
 //    P.transferBlock(pf.x - R/2,pf.y-R/2,R,R,k_pf);
