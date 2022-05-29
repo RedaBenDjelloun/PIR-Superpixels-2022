@@ -70,3 +70,93 @@ bool compareTransfertBlock(Partition &P, double H_ini, double G_ini, int x1, int
             P.calcul_Zb(x,y);
     return false;
 }
+
+//s_i : superpixel donneur, s_f : receveur; return true si meilleure partition pour energie H
+bool compare_fast_H(Partition &P, int x1, int y1, int wb, int hb, int s_i, int s_f){
+
+    //coords des points a deplacer
+    list<Point> patch_coords;
+    for (int x = x1; x < min(x1+wb,P.getw()); x++){
+        for (int y = y1; y < min(y1 + hb,P.geth()); y++){
+            if (P.get_s(x,y) == s_i)
+                patch_coords.push_back({x,y});
+        }
+    }
+    //nombre de pixels dans le patch mais aussi le facteur de normalisation
+    int Z_patch = patch_coords.size();
+    Point patch[Z_patch];
+    for (int i=0; i<Z_patch; i++){
+        patch[i] = patch_coords.front();
+        patch_coords.pop_front();
+    }
+
+    // histogramme patch
+    int c[J][J][J];
+    for (int i=0; i<Z_patch; i++){
+        int x = patch[i].x;
+        int y = patch[i].y;
+         // On incrémente de 1 le panier (r,g,b) où tombe le pixel (x,y) du patch
+        c[P.get_Ir(x,y)/Nj][P.get_Ig(x,y)/Nj][P.get_Ib(x,y)/Nj] += 1;
+
+    }
+
+    //*****************************
+    // Cas du patch de taille 1 : O(1)
+
+    if (Z_patch == 1){
+        int x = patch[0].x;
+        int y = patch[0].y;
+        int r = P.get_Ir(x,y)/Nj;
+        int g = P.get_Ig(x,y)/Nj;
+        int b = P.get_Ib(x,y)/Nj;
+
+        int int1 = P.get_c(s_f,r,g,b)/P.get_Zc(s_f);
+        int int2 = (P.get_c(s_i,r,g,b) - c[r][g][b])/(P.get_Zc(s_i) - Z_patch);
+
+        if(int1 > int2)
+            return true;
+        else
+            return false;
+
+    }
+    //****************************
+
+    //patch de taille > 1
+    //calcul terme de gauche int()
+    double intersection1 = 0;
+    for (int r = 0; r < J; r++){
+        for (int g = 0; g < J; g++){
+            for (int b = 0; b < J; b++){
+            intersection1 += min(P.get_c(s_f,r,g,b)/P.get_Zc(s_f), c[r][g][b]/Z_patch);
+            }
+        }
+    }
+
+    //calcul terme de droite int()
+    //histogramme superpixel donneur sans le patch
+    int c_i[J][J][J];
+    for (int r = 0; r < J; r++){
+        for (int g = 0; g < J; g++){
+            for (int b = 0; b < J; b++){
+            c_i[r][g][b] = P.get_c(s_i,r,g,b) - c[r][g][b];
+            }
+        }
+    }
+    //nouvelle normalisation associee
+    int Z_i = P.get_Zc(s_i) - Z_patch;
+
+    double intersection2 = 0;
+    for (int r = 0; r < J; r++){
+        for (int g = 0; g < J; g++){
+            for (int b = 0; b < J; b++){
+            intersection2 += min(c_i[r][g][b]/Z_i, c[r][g][b]/Z_patch);
+            }
+        }
+    }
+
+    //test final
+    if (intersection1 > intersection2){
+        return true;
+    }
+    return false;
+}
