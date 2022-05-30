@@ -185,15 +185,18 @@ void Partition::remplir_b(){
     int k = 0;
     for (int x = 0; x < w; x++){
         for (int y = 0; y < h; y++){
+            for (int n=0;n<K;n++)// On réinitialise;
+                set_b(n,x,y,0);
             for (int i=max(0,x-Np/2);i<=min(w-1,x+Np/2);i++){
                 for (int j=max(0,y-Np/2);j<=min(h-1,y+Np/2);j++){
                     k = get_s(i,j);
                     incr_b(k,x,y,1);
-                 }
+                }
             }
         }
     }
 }
+
 void Partition::draw_b(int x, int y){
     int barWidth = 30;
     int barHeight = h;
