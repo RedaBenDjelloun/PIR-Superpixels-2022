@@ -107,6 +107,15 @@ void Partition::calcul_Zc(int k){
     Zc[k] = Z;
 }
 void Partition::remplir_c(){
+    for (int k=0; k<K; k++){
+            for (int r = 0; r < J; r++){
+                for (int g = 0; g < J; g++){
+                    for (int b = 0; b < J; b++){
+                         set_c(k,r,g,b,0);
+                    }
+                }
+            }
+        }
     int w = getw();
     int h = geth();
     int k, r, g, b;
