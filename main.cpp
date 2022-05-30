@@ -57,7 +57,7 @@ int main() {
 //    click();
 
 //    /// **** Terme de couleurs
-//    P.remplir_c();
+    P.remplir_c();
 //    int k = 0;
 //    P.draw_c(k);
 //    cout<<"Histogramme du superpixel "<<k<<endl;
@@ -65,7 +65,7 @@ int main() {
 //    cout<<"Terme de couleur = "<<H(P)<<endl;
 
 //    /// **** Terme de frontière
-//    P.remplir_b();
+    P.remplir_b();
 //    int x=P.Nw(), y=P.Nh();
 //    P.draw_b(x,y);
 
@@ -79,16 +79,16 @@ int main() {
     Point pf = Point(0,0);
     int k_pf = 0;
     int old_s[R*R];
-    for (int i = 0; i < 1000; i++){
+    for (int i = 0; i < 10000; i++){
         p0 = Point(rand()%P.getw(),rand()%P.geth());
-        //cout<<"Point de départ : pixel ("<<p0.x<<","<<p0.y<<")"<<endl;
+        cout<<"Point de départ : pixel ("<<p0.x<<","<<p0.y<<")"<<endl;
         pf = P.rechercheFrontiereRapide(p0);
         //cout<<"Point d'arrivée : pixel ("<<pf.x<<","<<pf.y<<")"<<endl;
         //cout<<"Appartenance à la frontière : "<<P.appartientFrontiere(pf)<<endl;
         k_pf = P.get_s(pf.x,pf.y);
         //k_pf = rand()%12;
         //P.transferBlock(pf.x - R/2,pf.y-R/2,R,R,k_pf);
-        if(compareTransfertBlock(P, H(P), G(P), pf.x - R/2,pf.y-R/2,R,R,k_pf, old_s)){
+        if(compareTransfertBlock(P, H(P), G(P), max(0,pf.x - R/2),max(0,pf.y-R/2),min(abs(pf.x-w),R),min(abs(pf.y-h),R),k_pf, old_s)){
             clearWindow();
             display(I);
             P.draw();

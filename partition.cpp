@@ -247,7 +247,7 @@ void Partition::transferBlock(int x1, int y1, int wb, int hb, int k){
     }
 }
 bool Partition::appartientImage(Point p){
-    return (p.x >= 0 and p.x < w and p.y >= 0  and p.y < h)? true
+    return (p.x > 0 and p.x < w and p.y > 0  and p.y < h)? true
                                                            : false;
 }
 bool Partition::appartientFrontiere(Point p){
@@ -255,7 +255,7 @@ bool Partition::appartientFrontiere(Point p){
     // Les pixels à la bordure de l'image sont nécéssairement à la bordure de leur superpixel
     // donc on ne les teste pas
     // cette bordure ne nous intéresse pas donc on met false
-    if (p.x == 0 or p.x == w-1 or p.y == 0 or p.y == h-1){ // Frontière
+    if (p.x == 0 or p.x == w or p.y == 0 or p.y == h){ // Frontière
         frontiere = false;
     }
     else if ((get_s(p.x,p.y) != get_s(p.x+1,p.y))   // fronière à droite
@@ -304,12 +304,13 @@ Point Partition::rechercheFrontiereRapide(Point p0){
     for(int x=0;x<w;x++)
         for(int y=0;y<h;y++)
             t[x][y]=false;
+
     list<Point> file;
     file.push_back(p0);
     Point current_p = Point(0,0);
     Point candidat = Point(0,0);
     Point pf = Point(0,0);
-    t[current_p.x][current_p.y]=true;
+
     bool trouve = false;
     int compteur = 0;
     while (file.size() > 0 and not trouve){
