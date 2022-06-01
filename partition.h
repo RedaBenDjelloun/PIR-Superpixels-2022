@@ -12,7 +12,7 @@ const int Np = 3; // Taille recommandée : Np = 3
 /// Nombre de superpixels sur une ligne
 const int Kw = 4;
 /// Nombre de superpixels sur une colonne
-const int Kh = 3;
+const int Kh = 4;
 /// Nombre total de superpixels de la partition
 const int K = Kw*Kh; // Nombre de superpixels recommandé : K = 200 superpixels sur une image 481x321
 /// Nombre de paniers de couleurs sur chacun des channels R,G,B
@@ -59,6 +59,8 @@ public:
     int get_Ig(int x, int y);
     /// Accesseur pour la valeur du channel B du pixel (x,y) de I
     int get_Ib(int x, int y);
+    /// Affichage de l'image I
+    void display_I();
     //******************** Tableau s ********************
     /// Accesseur pour le superpixel parent du pixel (x,y)
     int get_s(int x, int y);
@@ -117,6 +119,8 @@ public:
     Point rechercheFrontiere(Point p0);
     /// Renvoie le pixel pf le plus proche en croix du pixel p0
     Point rechercheFrontiereRapide(Point p0);
+    /// Renvoie le pixel pf le plus proche en croix du pixel p0 en affichant les points intermédiaires
+    Point rechercheFrontiereRapideAffiche(Point p0); // on sépare de la fonction sans affichage pour ne pas faire le test d'un bool "affiche" à chaque passage
     /// Teste si le superpixel k est connexe
     bool connexe(int k);
 };

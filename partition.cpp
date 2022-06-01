@@ -68,6 +68,9 @@ int Partition::get_Ig(int x, int y){
 int Partition::get_Ib(int x, int y){
     return int(I(x,y).b());
 }
+void Partition::display_I(){
+    display(I);
+}
 //******************** Tableau s ********************
 int Partition::get_s(int x, int y){
     return  s[x +y*w];
@@ -92,9 +95,6 @@ void Partition::set_c(int k, int r, int g, int b, int valeur){
 void Partition::incr_c(int k, int r, int g, int b, int increment){
     c[k][r][g][b] += increment;
 }
-int Partition::get_Zc(int k){
-    return Zc[k];
-}
 void Partition::calcul_Zc(int k){
     int Z = 0;
     for (int r = 0; r < J; r++){
@@ -105,6 +105,9 @@ void Partition::calcul_Zc(int k){
         }
     }
     Zc[k] = Z;
+}
+int Partition::get_Zc(int k){
+    return Zc[k];
 }
 void Partition::remplir_c(){
     for (int k=0; k<K; k++){
@@ -175,8 +178,13 @@ int Partition::get_Zb(int x, int y){
 }
 void Partition::calcul_Zb(int x, int y){
     int Z = 0;
-    for(int k=0;k<K;k++)
-        Z += get_b(k,x,y);
+    if (x == 0 or x == w-1 or y == 0 or y == h-1){
+        for(int k=0;k<K;k++)
+            Z += get_b(k,x,y);
+    }
+    else{
+        Z = Np*Np;
+    }
     Zb[x +y*w] = Z;
 }
 void Partition::remplir_b(){
@@ -226,6 +234,7 @@ void Partition::draw(){
     }
 }
 bool Partition::testGrille(){
+    cout <<"Test de la disposition intiale en grille"<<endl;
     bool pass = true;
     for (int xk = 0; xk < Kw; xk++){
         for (int yk = 0; yk < Kh; yk++){
@@ -241,11 +250,12 @@ bool Partition::testGrille(){
         }
     }
     if (pass){
-        cout<<"testGrille réussi"<<endl;
+        cout<<"Réussite"<<endl;
     }
     else{
         cout<<"Attention, le tableau s ne contient pas ce qu'il est censé contenir"<<endl;
     }
+    cout<<endl;
     return pass;
 }
 void Partition::transferBlock(int x1, int y1, int wb, int hb, int k){
@@ -290,7 +300,7 @@ Point Partition::rechercheFrontiere(Point p0){
     while (file.size() > 0 and not trouve){
         current_p= file.back();
         t[current_p.x][current_p.y] = true;
-        //drawPoint(current_p, RED);
+        drawPoint(current_p, RED);
         file.pop_back();
         if (appartientFrontiere(current_p)){
             trouve = true;
@@ -325,7 +335,43 @@ Point Partition::rechercheFrontiereRapide(Point p0){
     while (file.size() > 0 and not trouve){
         current_p= file.back();
         t[current_p.x][current_p.y] = true;
-        //drawPoint(current_p, RED);
+        file.pop_back();
+        if (appartientFrontiere(current_p)){
+            trouve = true;
+            pf = current_p;
+        }
+        else{
+            for (int i = 0; i < 4; i++){
+                candidat = p0 + (1 + compteur/4)*directions[i];
+                compteur+=1;
+                if (appartientImage(candidat) and not t[candidat.x][candidat.y]){
+                    file.push_front(candidat);
+                    t[candidat.x][candidat.y]=true;
+                }
+            }
+        }
+    }
+    return pf;
+}
+Point Partition::rechercheFrontiereRapideAffiche(Point p0){
+    bool t[w][h];
+    for(int x=0;x<w;x++)
+        for(int y=0;y<h;y++)
+            t[x][y]=false;
+
+    list<Point> file;
+    file.push_back(p0);
+    Point current_p = Point(0,0);
+    Point candidat = Point(0,0);
+    Point pf = Point(0,0);
+
+    bool trouve = false;
+    int compteur = 0;
+    while (file.size() > 0 and not trouve){
+        current_p= file.back();
+        t[current_p.x][current_p.y] = true;
+        drawPoint(current_p, RED); // seule différence avec la fonction précédente
+        // on ne l'intègre pas directement dans la fonction précédente afin de ne pas la ralentir avec des tests de booléen
         file.pop_back();
         if (appartientFrontiere(current_p)){
             trouve = true;
