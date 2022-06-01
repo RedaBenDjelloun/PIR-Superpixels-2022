@@ -19,6 +19,8 @@ const int K = Kw*Kh; // Nombre de superpixels recommandé : K = 200 superpixels 
 const int J = 5; // Nombre recommandé : 5 par channel soit 125 paniers au total
 /// Nombre de couleurs par panier de couleur sur un même channel R,G ou B
 const int Nj = 256/J; // Nombre de couleurs par paniers sur un même channel
+/// Poids des termes d'énergie
+const double gam = 1;
 
 // ******************** Classe ********************
 class Partition{
@@ -38,9 +40,10 @@ class Partition{
     int* b;
     /// Tableau des facteurs de normalisation des w*h histogrammes de superpixels voisins
     int* Zb;
-    /// Tableau des tailles des superpixels
-    int Ksize[K];
-
+    /// Terme de couleur de l'énergie
+    double H;
+    /// Terme de frontière de l'énergie
+    double G;
 public:
     //******************** Constructeurs, Destructeurs ********************
     /// Constructeur vide
@@ -103,6 +106,17 @@ public:
     void remplir_b();
     /// Affiche dans une autre fenêtre l'histogrammee de superpixels voisins du pixel (x,y)
     void draw_b(int x, int y);
+    //******************** Energie ********************
+    /// Accesseur pour le terme de couleur s
+    double get_H();
+    /// Calcule H depuis zéro
+    void initialize_H();
+    /// Accesseur pour le terme de frontières
+    double get_G();
+    /// Calcule G depuis zéro
+    void initialize_G();
+    /// Calcul de l'énergie totale
+    double E();
     //******************** Fonctions utiles ********************
     /// Renvoie le nombre de pixels horizontaux par case la grille initiale
     int Nw();
@@ -124,10 +138,5 @@ public:
     Point rechercheFrontiereAffiche(Point p0); // on sépare de la fonction sans affichage pour ne pas faire le test d'un bool "affiche" à chaque passage
     /// Teste si le superpixel k est connexe
     bool connexe(int k);
-    //******************** Ksize ********************
-    int get_size(int k);
-    void incr_size(int k, int increment);
-    void set_size(int k, int valeur);
-
 };
 
