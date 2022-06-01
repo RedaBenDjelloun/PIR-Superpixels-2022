@@ -44,6 +44,9 @@ Partition::Partition(Image<Color> I_){
             Zb[x+y*w] = 0;
         }
     }
+    // Energie
+    H = 0;
+    G= 0;
 }
 Partition::~Partition(){
     delete[] s;
@@ -219,6 +222,53 @@ void Partition::draw_b(int x, int y){
         fillRect(barWidth*k,h,barWidth,-barHeight,barColor);
     }
 
+}
+
+//******************** Energie ********************
+double Partition::get_H(){
+    return H;
+}
+void Partition::initialize_H(){
+    double new_H=0.;
+    int Zc = 0;
+    int val = 0;
+    for(int k=0;k<K;k++){
+        double Hk=0.;
+        for(int r=0;r<J;r++)
+            for(int g=0;g<J;g++)
+                for(int b=0;b<J;b++){
+                    val=get_c(k,r,g,b);
+                    Hk+=val*val;
+                }
+        Zc = get_Zc(k);
+        if(Zc !=0){
+            new_H+=Hk/Zc*Zc;
+        }
+    }
+    H = new_H/K;
+}
+double Partition::get_G(){
+    return G;
+}
+void Partition::initialize_G(){
+    double new_G=0;
+    int Zb = 0;
+    int val = 0;
+    for(int x=0;x<getw();x++)
+        for(int y=0;y<geth();y++){
+            double Gi=0.;
+            for(int k=0;k<K;k++){
+                val=get_b(k,x,y);
+                Gi+=val*val;
+            }
+            Zb = get_Zb(x,y);
+            if(Zb!=0)
+                new_G+=Gi/(Zb*Zb);
+        }
+    G = new_G/(getw()*geth());
+}
+double Partition::E(){
+    return H + gam*G;
 }
 //******************** Fonctions utiles ********************
 int Partition::Nw(){

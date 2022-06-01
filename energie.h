@@ -1,9 +1,6 @@
 #pragma once
 
 #include "partition.h"
-
-// Poids des termes d'énergie
-const float gam = 1;
 // Nombre maximal d'itérations
 const int t_stop=100;
 

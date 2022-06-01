@@ -74,19 +74,6 @@ void testFrontiere(Partition &P, int NbIter){
     }
     cout<<endl;
 }
-void testFrontiereRapide(Partition &P, int NbIter){
-    cout <<"Test de la recherche de frontières"<<endl;
-    Point p0 = Point(0,0);
-    Point pf = Point(0,0);
-    for (int i = 0; i < NbIter; i++){
-        p0 = Point(rand()%P.getw(),rand()%P.geth());
-        cout<<"Point de départ : pixel ("<<p0.x<<","<<p0.y<<")"<<endl;
-        pf = P.rechercheFrontiereAffiche(p0);
-        cout<<"Point d'arrivée : pixel ("<<pf.x<<","<<pf.y<<")"<<endl;
-        cout<<"Appartenance à la frontière : "<<P.appartientFrontiere(pf)<<endl;
-    }
-    cout<<endl;
-}
 /// Segmentation aléatoire de l'image pour tester la rapidité des fonctions autres que l'énergie
 void testRandomSegmentation(Partition &P, int NbIter){
     cout <<"Test de segmentation aléatoire"<<endl;
@@ -94,7 +81,9 @@ void testRandomSegmentation(Partition &P, int NbIter){
     Point pf = Point(0,0);
     int k_pf = 0;
     for (int i = 0; i < NbIter; i++){
+        do{
         p0 = Point(rand()%P.getw(),rand()%P.geth());
+        } while(P.appartientFrontiere(p0));
         pf = P.rechercheFrontiere(p0);
         k_pf = P.get_s(pf.x,pf.y);
         P.transferBlock(pf.x - R/2,pf.y-R/2,R,R,k_pf);
@@ -125,8 +114,8 @@ void hillClimbing(Partition &P){
             admission++;
             cout <<"Itération n° "<<i<<endl;
             cout <<"Taux d'admission : "<<float(admission)/i<<endl;
-            cout<<"Terme de couleur = "<<H(P)<<endl;
-            cout<<"Terme de frontière = "<<G(P)<<endl;
+            cout<<"Terme de couleur = "<<P.get_H()<<endl;
+            cout<<"Terme de frontière = "<<P.get_G()<<endl;
             cout<<endl;
         }
     }
@@ -164,13 +153,12 @@ int main() {
 
     setActiveWindow(W1);
     int NbIter = 1000;
-    testFrontiere(P,NbIter);
-//    testFrontiereRapide(P,NbIter);
+//    testFrontiere(P,NbIter);
 //    testRandomSegmentation(P,NbIter);
 
     // ******************** Hill-Climbing Optimization ********************
 
-//    hillClimbing(P);
+    hillClimbing(P);
     
     // ******************** Fin ********************
     endGraphics();
