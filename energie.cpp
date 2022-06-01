@@ -11,7 +11,6 @@ double H(Partition &P){
                     int val=P.get_c(k,r,g,b);
                     Hk+=val*val;
                 }
-        P.calcul_Zc(k);
         if(P.get_Zc(k)!=0)
             H+=Hk/(P.get_Zc(k)*P.get_Zc(k));
     }
@@ -28,7 +27,6 @@ double G(Partition &P){
                 int val=P.get_b(k,x,y);
                 Gi+=val*val;
             }
-            P.calcul_Zb(x,y);
             if(P.get_Zb(x,y)!=0)
                 G+=Gi/(P.get_Zb(x,y)*P.get_Zb(x,y));
         }
@@ -62,12 +60,6 @@ bool compareTransfertBlock(Partition &P, double H_ini, double G_ini, int x1, int
     //mise à jour de c et b
     P.remplir_c();
     P.remplir_b();
-    //mise à jour de Zc et Zb
-    for(int k=0;k<K;k++)
-        P.calcul_Zc(k);
-    for(int x=0;x<P.getw();x++)
-        for(int y=0;y<P.geth();y++)
-            P.calcul_Zb(x,y);
     return false;
 }
 
@@ -215,12 +207,6 @@ bool cTB(Partition &P, double H_ini, double G_ini, int x1, int y1, int wb, int h
             }
         }
     }
-    //mise à jour de Zc et Zb
-    for(int k=0;k<K;k++)
-        P.calcul_Zc(k);
-    for(int x=0;x<P.getw();x++)
-        for(int y=0;y<P.geth();y++)
-            P.calcul_Zb(x,y);
     return false;
 }
 

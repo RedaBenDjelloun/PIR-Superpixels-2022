@@ -107,6 +107,7 @@ void Partition::calcul_Zc(int k){
     Zc[k] = Z;
 }
 int Partition::get_Zc(int k){
+    calcul_Zc(k);
     return Zc[k];
 }
 void Partition::remplir_c(){
@@ -149,7 +150,6 @@ void Partition::draw_c(int k){
     Color barColor = RED;
     Window Histo = openWindow(J*J*J*barWidth,h);
     setActiveWindow(Histo);
-    calcul_Zc(k);
     int Z = get_Zc(k);
     cout<<"Zc = "<<Z<<endl;
     for (int r = 0; r < J; r++){
@@ -173,9 +173,6 @@ void Partition::set_b(int k, int x, int y, int valeur){
 void Partition::incr_b(int k, int x, int y, int increment){
     b[x + w*(y + h*k)] += increment;
 }
-int Partition::get_Zb(int x, int y){
-    return Zb[x +y*w];
-}
 void Partition::calcul_Zb(int x, int y){
     int Z = 0;
     if (x == 0 or x == w-1 or y == 0 or y == h-1){
@@ -186,6 +183,10 @@ void Partition::calcul_Zb(int x, int y){
         Z = Np*Np;
     }
     Zb[x +y*w] = Z;
+}
+int Partition::get_Zb(int x, int y){
+    calcul_Zb(x,y);
+    return Zb[x +y*w];
 }
 void Partition::remplir_b(){
     int w = getw();
@@ -211,7 +212,6 @@ void Partition::draw_b(int x, int y){
     Color barColor = RED;
     Window Histo = openWindow(K*barWidth,h);
     setActiveWindow(Histo);
-    calcul_Zb(x,y);
     int Z = get_Zb(x,y);
     cout<<"Zb = "<<Z<<endl;
     for (int k = 0; k < K; k++){
@@ -280,12 +280,12 @@ bool Partition::appartientFrontiere(Point p){
     if (p.x == 0 or p.x == w or p.y == 0 or p.y == h){ // Frontière
         frontiere = false;
     }
-    else if ((get_s(p.x,p.y) != get_s(p.x+1,p.y))   // fronière à droite
+    else {if ((get_s(p.x,p.y) != get_s(p.x+1,p.y))   // fronière à droite
      or (get_s(p.x,p.y) != get_s(p.x-1,p.y))        // frontière à gauche
      or (get_s(p.x,p.y) != get_s(p.x,p.y+1))        // frontière en haut
      or (get_s(p.x,p.y) != get_s(p.x,p.y-1))){      // en bas
         frontiere = true;
-    }
+    }}
     return frontiere;
 }
 Point Partition::rechercheFrontiere(Point p0){
@@ -293,105 +293,76 @@ Point Partition::rechercheFrontiere(Point p0){
     for(int x=0;x<w;x++)
         for(int y=0;y<h;y++)
             t[x][y]=false;
-    list<Point> file;
-    file.push_back(p0);
-    Point current_p = Point(0,0);
-    Point candidat = Point(0,0);
-    Point pf = Point(0,0);
-    t[current_p.x][current_p.y]=true;
-    bool trouve = false;
-    while (file.size() > 0 and not trouve){
-        current_p= file.back();
-        t[current_p.x][current_p.y] = true;
-        drawPoint(current_p, RED);
-        file.pop_back();
-        if (appartientFrontiere(current_p)){
-            trouve = true;
-            pf = current_p;
-        }
-        else{
-            for (int i = 0; i < 4; i++){
-                candidat = current_p + directions[i];
-                if (appartientImage(candidat) and not t[candidat.x][candidat.y]){
-                    file.push_front(candidat);
-                    t[candidat.x][candidat.y]=true;
-                }
-            }
-        }
-    }
-    return pf;
-}
-Point Partition::rechercheFrontiereRapide(Point p0){
-    bool t[w][h];
-    for(int x=0;x<w;x++)
-        for(int y=0;y<h;y++)
-            t[x][y]=false;
 
-    list<Point> file;
-    file.push_back(p0);
-    Point current_p = Point(0,0);
-    Point candidat = Point(0,0);
-    Point pf = Point(0,0);
+    list<PointOriente> file;
+    PointOriente p0_ = PointOriente(p0,0); // Notation p_ est le point orienté dont le champ point est p
+    file.push_back(p0_);
+    PointOriente current_p_ = PointOriente(Point(0,0),0);
+    PointOriente candidat_ = PointOriente(Point(0,0),0);
+    PointOriente pf_ = PointOriente(Point(0,0),0);
 
     bool trouve = false;
     int compteur = 0;
     while (file.size() > 0 and not trouve){
-        current_p= file.back();
-        t[current_p.x][current_p.y] = true;
+        current_p_= file.back();
+        t[current_p_.p.x][current_p_.p.y] = true;
         file.pop_back();
-        if (appartientFrontiere(current_p)){
+        if (appartientFrontiere(current_p_.p)){
             trouve = true;
-            pf = current_p;
+            pf_ = current_p_;
         }
         else{
             for (int i = 0; i < 4; i++){
-                candidat = p0 + (1 + compteur/4)*directions[i];
+                candidat_.p = p0 + (1 + compteur/4)*directions[i];
+                candidat_.orientation = i;
                 compteur+=1;
-                if (appartientImage(candidat) and not t[candidat.x][candidat.y]){
-                    file.push_front(candidat);
-                    t[candidat.x][candidat.y]=true;
+                if (appartientImage(candidat_.p) and not t[candidat_.p.x][candidat_.p.y]){
+                    file.push_front(candidat_);
+                    t[candidat_.p.x][candidat_.p.y]=true;
                 }
             }
         }
     }
-    return pf;
+    return pf_.p + directions[pf_.orientation];
 }
-Point Partition::rechercheFrontiereRapideAffiche(Point p0){
+Point Partition::rechercheFrontiereAffiche(Point p0){
     bool t[w][h];
     for(int x=0;x<w;x++)
         for(int y=0;y<h;y++)
             t[x][y]=false;
 
-    list<Point> file;
-    file.push_back(p0);
-    Point current_p = Point(0,0);
-    Point candidat = Point(0,0);
-    Point pf = Point(0,0);
+    list<PointOriente> file;
+    PointOriente p0_ = PointOriente(p0,0); // Notation p_ est le point orienté dont le champ point est p
+    file.push_back(p0_);
+    PointOriente current_p_ = PointOriente(Point(0,0),0);
+    PointOriente candidat_ = PointOriente(Point(0,0),0);
+    PointOriente pf_ = PointOriente(Point(0,0),0);
 
     bool trouve = false;
     int compteur = 0;
     while (file.size() > 0 and not trouve){
-        current_p= file.back();
-        t[current_p.x][current_p.y] = true;
-        drawPoint(current_p, RED); // seule différence avec la fonction précédente
+        current_p_= file.back();
+        t[current_p_.p.x][current_p_.p.y] = true;
+        drawPoint(current_p_.p, RED); // seule différence avec la fonction précédente
         // on ne l'intègre pas directement dans la fonction précédente afin de ne pas la ralentir avec des tests de booléen
         file.pop_back();
-        if (appartientFrontiere(current_p)){
+        if (appartientFrontiere(current_p_.p)){
             trouve = true;
-            pf = current_p;
+            pf_ = current_p_;
         }
         else{
             for (int i = 0; i < 4; i++){
-                candidat = p0 + (1 + compteur/4)*directions[i];
+                candidat_.p = p0 + (1 + compteur/4)*directions[i];
+                candidat_.orientation = i;
                 compteur+=1;
-                if (appartientImage(candidat) and not t[candidat.x][candidat.y]){
-                    file.push_front(candidat);
-                    t[candidat.x][candidat.y]=true;
+                if (appartientImage(candidat_.p) and not t[candidat_.p.x][candidat_.p.y]){
+                    file.push_front(candidat_);
+                    t[candidat_.p.x][candidat_.p.y]=true;
                 }
             }
         }
     }
-    return pf;
+    return pf_.p + directions[pf_.orientation];
 }
 bool Partition::connexe(int k){
     list<Coords<2>> L;

@@ -68,7 +68,7 @@ void testFrontiere(Partition &P, int NbIter){
     for (int i = 0; i < NbIter; i++){
         p0 = Point(rand()%P.getw(),rand()%P.geth());
         cout<<"Point de départ : pixel ("<<p0.x<<","<<p0.y<<")"<<endl;
-        pf = P.rechercheFrontiere(p0);
+        pf = P.rechercheFrontiereAffiche(p0);
         cout<<"Point d'arrivée : pixel ("<<pf.x<<","<<pf.y<<")"<<endl;
         cout<<"Appartenance à la frontière : "<<P.appartientFrontiere(pf)<<endl;
     }
@@ -81,7 +81,7 @@ void testFrontiereRapide(Partition &P, int NbIter){
     for (int i = 0; i < NbIter; i++){
         p0 = Point(rand()%P.getw(),rand()%P.geth());
         cout<<"Point de départ : pixel ("<<p0.x<<","<<p0.y<<")"<<endl;
-        pf = P.rechercheFrontiereRapideAffiche(p0);
+        pf = P.rechercheFrontiereAffiche(p0);
         cout<<"Point d'arrivée : pixel ("<<pf.x<<","<<pf.y<<")"<<endl;
         cout<<"Appartenance à la frontière : "<<P.appartientFrontiere(pf)<<endl;
     }
@@ -95,7 +95,7 @@ void testRandomSegmentation(Partition &P, int NbIter){
     int k_pf = 0;
     for (int i = 0; i < NbIter; i++){
         p0 = Point(rand()%P.getw(),rand()%P.geth());
-        pf = P.rechercheFrontiereRapide(p0);
+        pf = P.rechercheFrontiere(p0);
         k_pf = P.get_s(pf.x,pf.y);
         P.transferBlock(pf.x - R/2,pf.y-R/2,R,R,k_pf);
     }
@@ -116,9 +116,9 @@ void hillClimbing(Partition &P){
     int admission = 0;
     for (int i = 0; i < 10000; i++){
         p0 = Point(rand()%P.getw(),rand()%P.geth());
-        pf = P.rechercheFrontiereRapide(p0);
+        pf = P.rechercheFrontiere(p0);
         k_pf = P.get_s(pf.x,pf.y);
-        if(compareTransfertBlock(P, H(P), G(P), max(0,pf.x - R/2),max(0,pf.y-R/2),min(abs(pf.x-w),R),min(abs(pf.y-h),R),k_pf, old_s)){
+        if(cTB(P, H(P), G(P), max(0,pf.x - R/2),max(0,pf.y-R/2),min(abs(pf.x-w),R),min(abs(pf.y-h),R),k_pf, old_s)){
             clearWindow();
             P.display_I();
             P.draw();
@@ -157,14 +157,14 @@ int main() {
 
 //    testTranferBlocks(P);
 
-    int k = 0;
-    testH(P,k);
-    int x=P.Nw(), y=P.Nh();
-    testG(P,x,y);
+//    int k = 0;
+//    testH(P,k);
+//    int x=P.Nw(), y=P.Nh();
+//    testG(P,x,y);
 
     setActiveWindow(W1);
-//    int NbIter = 1000;
-//    testFrontiere(P,NbIter);
+    int NbIter = 1000;
+    testFrontiere(P,NbIter);
 //    testFrontiereRapide(P,NbIter);
 //    testRandomSegmentation(P,NbIter);
 

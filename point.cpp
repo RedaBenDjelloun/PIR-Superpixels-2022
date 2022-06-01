@@ -34,3 +34,10 @@ Point operator*(int facteur, Point p){
 void drawPoint(Point p, Color col){
     drawPoint(p.x,p.y,col);
 }
+
+//***** PointOriente ******
+
+PointOriente::PointOriente(Point p0, int orientation0){
+    p = p0;
+    orientation = orientation0;
+}

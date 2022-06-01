@@ -32,3 +32,11 @@ const Point directions[4] = {gauche, bas, droite, haut};
 const Point voisins[8] = {gauche, bas_gauche, bas, bas_droite, droite, haut_droite, haut, haut_gauche};
 
 void drawPoint(Point p0, Color col);
+
+struct PointOriente{
+    Point p;
+    int orientation;
+
+    PointOriente();
+    PointOriente(Point p0, int orientation0);
+};

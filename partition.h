@@ -117,10 +117,8 @@ public:
     bool appartientFrontiere(Point p);
     /// Renvoie le pixel pf le plus proche en norme 1 du pixel p0
     Point rechercheFrontiere(Point p0);
-    /// Renvoie le pixel pf le plus proche en croix du pixel p0
-    Point rechercheFrontiereRapide(Point p0);
     /// Renvoie le pixel pf le plus proche en croix du pixel p0 en affichant les points intermédiaires
-    Point rechercheFrontiereRapideAffiche(Point p0); // on sépare de la fonction sans affichage pour ne pas faire le test d'un bool "affiche" à chaque passage
+    Point rechercheFrontiereAffiche(Point p0); // on sépare de la fonction sans affichage pour ne pas faire le test d'un bool "affiche" à chaque passage
     /// Teste si le superpixel k est connexe
     bool connexe(int k);
 };
