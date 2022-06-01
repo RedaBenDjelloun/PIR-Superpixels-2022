@@ -38,6 +38,9 @@ class Partition{
     int* b;
     /// Tableau des facteurs de normalisation des w*h histogrammes de superpixels voisins
     int* Zb;
+    /// Tableau des tailles des superpixels
+    int Ksize[K];
+
 public:
     //******************** Constructeurs, Destructeurs ********************
     /// Constructeur vide
@@ -121,5 +124,10 @@ public:
     Point rechercheFrontiereAffiche(Point p0); // on sépare de la fonction sans affichage pour ne pas faire le test d'un bool "affiche" à chaque passage
     /// Teste si le superpixel k est connexe
     bool connexe(int k);
+    //******************** Ksize ********************
+    int get_size(int k);
+    void incr_size(int k, int increment);
+    void set_size(int k, int valeur);
+
 };
 

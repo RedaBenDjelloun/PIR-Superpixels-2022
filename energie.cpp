@@ -154,58 +154,106 @@ bool compare_fast_H(Partition &P, int x1, int y1, int wb, int hb, int s_i, int s
 }
 
 bool cTB(Partition &P, double H_ini, double G_ini, int x1, int y1, int wb, int hb, int k, int old_s[]){
-    int w = P.getw();
-    int h = P.geth();
+    int w = P.getw(),h = P.geth() ;
     int r,g,b;
+    int sizeModif[K];
+    bool Kconcerned[K];//on optimise connexe en appliquant la fonction qu'au superpixels modifiées
+    bool sizeaccepted=true;
+    int sizeMin=P.Nw()*P.Nh()*0.3;
+    int sizeMax=P.Nw()*P.Nh()*2;
+    ///initialisation de tableaux pour taille et connexe
+    for(int l=0; l<K; l++){
+        Kconcerned[l]=false;
+        sizeModif[l]=P.get_size(l);
+    }
+    Kconcerned[k]=true;
+    /// On encadre la taille
     for (int x = x1; x < min(x1+wb,w); x++){
         for (int y = y1; y < min(y1 + hb,h); y++){
-            old_s[(x-x1)+(y-y1)*wb]=P.get_s(x,y);
-            r = P.get_Ir(x,y)/Nj; // entier entre 0 et J-1 correspondant à l'indice r du panier
-            g = P.get_Ig(x,y)/Nj;
-            b = P.get_Ib(x,y)/Nj;
-            P.incr_c(P.get_s(x,y),r,g,b,-1);
-            P.incr_c(k,r,g,b,1);
-            P.set_s(x,y,k);
+            int n=P.get_s(x,y);
+            if(!(Kconcerned[n]))
+                Kconcerned[n]=true;
+            sizeModif[n]+=-1;
+            sizeModif[k]+=1;
         }
     }
-    for (int x = x1; x < min(x1+wb,P.getw()); x++){
-        for (int y = y1; y < min(y1 + hb,P.geth()); y++){
-            for (int n=0;n<K;n++)// On réinitialise;
-                P.set_b(n,x,y,0);
-            for (int i=max(0,x-Np/2);i<=min(w-1,x+Np/2);i++){
-                for (int j=max(0,y-Np/2);j<=min(h-1,y+Np/2);j++){
-                    P.incr_b(P.get_s(i,j),x,y,1);
+    ///on regarde si la modification ne donne pas des superpixels trop gros et petits
+    for(int l=0; l<K; l++){
+        if(!(sizeaccepted and sizeMin<=sizeModif[l] and sizeModif[l]<=sizeMax))
+            sizeaccepted=false;
+    }
+    if(sizeaccepted){
+        /// on modifie le tableau s et c
+        for (int x = x1; x < min(x1+wb,w); x++){
+            for (int y = y1; y < min(y1 + hb,h); y++){
+                old_s[(x-x1)+(y-y1)*wb]=P.get_s(x,y);
+                r = P.get_Ir(x,y)/Nj; // entier entre 0 et J-1 correspondant à l'indice r du panier
+                g = P.get_Ig(x,y)/Nj;
+                b = P.get_Ib(x,y)/Nj;
+                P.incr_c(P.get_s(x,y),r,g,b,-1);
+                P.incr_c(k,r,g,b,1);
+                P.set_s(x,y,k);
+            }
+        }
+        /// on update le tableau b
+        for (int x = x1; x < min(x1+wb,P.getw()); x++){
+            for (int y = y1; y < min(y1 + hb,P.geth()); y++){
+                for (int n=0;n<K;n++)// On réinitialise;
+                    P.set_b(n,x,y,0);
+                for (int i=max(0,x-Np/2);i<=min(w-1,x+Np/2);i++){
+                    for (int j=max(0,y-Np/2);j<=min(h-1,y+Np/2);j++){
+                        P.incr_b(P.get_s(i,j),x,y,1);
+                    }
                 }
             }
         }
-    }
-    //calcul de H et G
-    double H_fin=H(P);
-    double G_fin=G(P);
-    if(H_fin+G_fin>H_ini+G_ini)
-        return true;
-    //rétablissemeent de P et c
-    for (int x = x1; x < min(x1+wb,P.getw()); x++){
-        for (int y = y1; y < min(y1 + hb,P.geth()); y++){
-            r = P.get_Ir(x,y)/Nj;
-            g = P.get_Ig(x,y)/Nj;
-            b = P.get_Ib(x,y)/Nj;
-            P.incr_c(k,r,g,b,-1);
-            P.incr_c(old_s[(x-x1)+(y-y1)*wb],r,g,b,1);
-            P.set_s(x,y,old_s[(x-x1)+(y-y1)*wb]);
+        /// on regarde si les superpixels modifiés sont connexes
+        bool conn = true;
+        for(int l=0; l<K and Kconcerned[l]; l++){
+               if(P.connexe(l)) conn = true;
+               else{
+                  conn = false;
+                  break;
+                    }
         }
-    }
-    //rétablissement de b
-    for (int x = x1; x < min(x1+wb,P.getw()); x++){
-        for (int y = y1; y < min(y1 + hb,P.geth()); y++){
-            for (int n=0;n<K;n++)// On réinitialise;
-                P.set_b(n,x,y,0);
-            for (int i=max(0,x-Np/2);i<=min(w-1,x+Np/2);i++){
-                for (int j=max(0,y-Np/2);j<=min(h-1,y+Np/2);j++){
-                    P.incr_b(P.get_s(i,j),x,y,1);
+        //calcul de H et G
+        double H_fin=H(P);
+        double G_fin=G(P);
+        if(H_fin+G_fin>H_ini+G_ini and conn){
+            for(int l=0;l<K;l++)
+                P.set_size(l,sizeModif[l]);
+            return true;
+        }
+        //rétablissemeent de P et c
+        for (int x = x1; x < min(x1+wb,P.getw()); x++){
+            for (int y = y1; y < min(y1 + hb,P.geth()); y++){
+                r = P.get_Ir(x,y)/Nj;
+                g = P.get_Ig(x,y)/Nj;
+                b = P.get_Ib(x,y)/Nj;
+                P.incr_c(k,r,g,b,-1);
+                P.incr_c(old_s[(x-x1)+(y-y1)*wb],r,g,b,1);
+                P.set_s(x,y,old_s[(x-x1)+(y-y1)*wb]);
+            }
+        }
+        //rétablissement de b
+        for (int x = x1; x < min(x1+wb,P.getw()); x++){
+            for (int y = y1; y < min(y1 + hb,P.geth()); y++){
+                for (int n=0;n<K;n++)// On réinitialise;
+                    P.set_b(n,x,y,0);
+                for (int i=max(0,x-Np/2);i<=min(w-1,x+Np/2);i++){
+                    for (int j=max(0,y-Np/2);j<=min(h-1,y+Np/2);j++){
+                        P.incr_b(P.get_s(i,j),x,y,1);
+                    }
                 }
             }
         }
+        //mise à jour de Zc et Zb
+        for(int k=0;k<K;k++)
+            P.calcul_Zc(k);
+        for(int x=0;x<P.getw();x++)
+            for(int y=0;y<P.geth();y++)
+                P.calcul_Zb(x,y);
+        return false;
     }
     return false;
 }
