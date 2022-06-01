@@ -160,3 +160,82 @@ bool compare_fast_H(Partition &P, int x1, int y1, int wb, int hb, int s_i, int s
     }
     return false;
 }
+
+bool cTB(Partition &P, double H_ini, double G_ini, int x1, int y1, int wb, int hb, int k, int old_s[]){
+    int w = P.getw();
+    int h = P.geth();
+    int r,g,b;
+    for (int x = x1; x < min(x1+wb,w); x++){
+        for (int y = y1; y < min(y1 + hb,h); y++){
+            old_s[(x-x1)+(y-y1)*wb]=P.get_s(x,y);
+            r = P.get_Ir(x,y)/Nj; // entier entre 0 et J-1 correspondant à l'indice r du panier
+            g = P.get_Ig(x,y)/Nj;
+            b = P.get_Ib(x,y)/Nj;
+            P.incr_c(P.get_s(x,y),r,g,b,-1);
+            P.incr_c(k,r,g,b,1);
+            P.set_s(x,y,k);
+        }
+    }
+    for (int x = x1; x < min(x1+wb,P.getw()); x++){
+        for (int y = y1; y < min(y1 + hb,P.geth()); y++){
+            for (int n=0;n<K;n++)// On réinitialise;
+                P.set_b(n,x,y,0);
+            for (int i=max(0,x-Np/2);i<=min(w-1,x+Np/2);i++){
+                for (int j=max(0,y-Np/2);j<=min(h-1,y+Np/2);j++){
+                    P.incr_b(P.get_s(i,j),x,y,1);
+                }
+            }
+        }
+    }
+    //calcul de H et G
+    double H_fin=H(P);
+    double G_fin=G(P);
+    if(H_fin+G_fin>H_ini+G_ini)
+        return true;
+    //rétablissemeent de P et c
+    for (int x = x1; x < min(x1+wb,P.getw()); x++){
+        for (int y = y1; y < min(y1 + hb,P.geth()); y++){
+            r = P.get_Ir(x,y)/Nj;
+            g = P.get_Ig(x,y)/Nj;
+            b = P.get_Ib(x,y)/Nj;
+            P.incr_c(k,r,g,b,-1);
+            P.incr_c(old_s[(x-x1)+(y-y1)*wb],r,g,b,1);
+            P.set_s(x,y,old_s[(x-x1)+(y-y1)*wb]);
+        }
+    }
+    //rétablissement de b
+    for (int x = x1; x < min(x1+wb,P.getw()); x++){
+        for (int y = y1; y < min(y1 + hb,P.geth()); y++){
+            for (int n=0;n<K;n++)// On réinitialise;
+                P.set_b(n,x,y,0);
+            for (int i=max(0,x-Np/2);i<=min(w-1,x+Np/2);i++){
+                for (int j=max(0,y-Np/2);j<=min(h-1,y+Np/2);j++){
+                    P.incr_b(P.get_s(i,j),x,y,1);
+                }
+            }
+        }
+    }
+    //mise à jour de Zc et Zb
+    for(int k=0;k<K;k++)
+        P.calcul_Zc(k);
+    for(int x=0;x<P.getw();x++)
+        for(int y=0;y<P.geth();y++)
+            P.calcul_Zb(x,y);
+    return false;
+}
+
+bool compare_fast_G(Partition &P, int x1, int y1,int n){
+    int k=P.get_s(x1,y1);
+    double Hk=0;
+    double Hn=0;
+    for (int i=max(0,x1-Np/2);i<=min(P.getw()-1,x1+Np/2);i++){
+        for (int j=max(0,y1-Np/2);j<=min(P.geth()-1,y1+Np/2);j++){
+            int Z=P.get_Zb(i,j);
+            Hk+=P.get_b(k,i,j)/Z;
+            Hn+=P.get_b(n,i,j)/Z+1;
+        }
+    }
+    if(Hn>Hk)// est-ce que le nouveau G est meilleur?
+        return true;
+    return false;
+}
