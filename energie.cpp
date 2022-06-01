@@ -239,7 +239,6 @@ bool cTB(Partition &P, double H_ini, double G_ini, int x1, int y1, int wb, int h
         for(int y=0;y<P.geth();y++)
             P.calcul_Zb(x,y);
     return false;
-
 }
 
 bool compare_fast_G(Partition &P, int x1, int y1,int n){
