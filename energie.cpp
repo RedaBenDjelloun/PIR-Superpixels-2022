@@ -152,7 +152,7 @@ bool compare_fast_H(Partition &P, int x1, int y1, int wb, int hb, int s_i, int s
     }
     return false;
 }
-
+// compare transfert bloc
 bool cTB(Partition &P, double H_ini, double G_ini, int x1, int y1, int wb, int hb, int k, int old_s[]){
     int w = P.getw(),h = P.geth() ;
     int r,g,b;
@@ -170,7 +170,6 @@ bool cTB(Partition &P, double H_ini, double G_ini, int x1, int y1, int wb, int h
                 Kconcerned[n]=true;
         }
     }
-    ///on regarde si la modification ne donne pas des superpixels trop gros et petits
     /// on modifie le tableau s et c
     for (int x = x1; x < min(x1+wb,w); x++){
         for (int y = y1; y < min(y1 + hb,h); y++){

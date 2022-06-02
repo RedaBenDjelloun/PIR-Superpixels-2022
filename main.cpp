@@ -20,7 +20,7 @@ Image<Color> loadImage(const char* name, int &w, int &h){
     // Dimensions initiales
     int w_ = I_.width();
     int h_ = I_.height();
-    assert(w > 0 and h > 0);
+    assert(w_ > 0 and h_ > 0);
     // Dimensions après réduction
     w = w_ - w_%Kw;
     h = h_ - h_%Kh;
