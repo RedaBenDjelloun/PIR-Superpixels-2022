@@ -110,15 +110,15 @@ void hillClimbing(Partition &P){
         p0 = Point(rand()%P.getw(),rand()%P.geth());
         pf = P.rechercheFrontiere(p0);
         k_pf = P.get_s(pf.x,pf.y);
-        if(cTB(P, H_ini, G_ini, max(0,pf.x - R/2),max(0,pf.y-R/2),min(abs(pf.x-w),R),min(abs(pf.y-h),R),k_pf, old_s)){
+        if(cTB(P, H(P), G(P), max(0,pf.x - R/2),max(0,pf.y-R/2),min(abs(pf.x-w),R),min(abs(pf.y-h),R),k_pf, old_s)){
             clearWindow();
             P.display_I();
             P.draw();
             admission++;
             cout <<"Itération n° "<<i<<endl;
             cout <<"Taux d'admission : "<<float(admission)/i<<endl;
-            cout<<"Terme de couleur = "<<H_ini<<endl;
-            cout<<"Terme de frontière = "<<G_ini<<endl;
+            //cout<<"Terme de couleur = "<<H(P)<<endl;
+            //cout<<"Terme de frontière = "<<H(P)<<endl;
             cout<<endl;
         }
     }

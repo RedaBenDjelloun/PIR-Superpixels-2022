@@ -153,7 +153,7 @@ bool compare_fast_H(Partition &P, int x1, int y1, int wb, int hb, int s_i, int s
     return false;
 }
 // compare transfert bloc
-bool cTB(Partition &P, double &H_ini, double &G_ini, int x1, int y1, int wb, int hb, int k, int old_s[]){
+bool cTB(Partition &P, double H_ini, double G_ini, int x1, int y1, int wb, int hb, int k, int old_s[]){
     int w = P.getw(),h = P.geth() ;
     int r,g,b;
     bool Kconcerned[K];//on optimise connexe en appliquant la fonction qu'au superpixels modifiées
@@ -200,7 +200,7 @@ bool cTB(Partition &P, double &H_ini, double &G_ini, int x1, int y1, int wb, int
     //calcul de H et G
     double H_fin=H(P);
     double G_fin=G(P);
-    if(H_fin+G_fin>H_ini+G_ini){
+    if(H_fin+G_fin>=H_ini+G_ini){
         H_ini = H_fin;
         G_ini = G_fin;
         return true;
