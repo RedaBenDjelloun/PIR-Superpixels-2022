@@ -162,15 +162,6 @@ bool cTB(Partition &P, double H_ini, double G_ini, int x1, int y1, int wb, int h
         Kconcerned[l]=false;
     }
     Kconcerned[k]=true;
-    /// On encadre la taille
-    for (int x = x1; x < min(x1+wb,w); x++){
-        for (int y = y1; y < min(y1 + hb,h); y++){
-            int n=P.get_s(x,y);
-            if(!(Kconcerned[n]))
-                Kconcerned[n]=true;
-        }
-    }
-    ///on regarde si la modification ne donne pas des superpixels trop gros et petits
     /// on modifie le tableau s et c
     for (int x = x1; x < min(x1+wb,w); x++){
         for (int y = y1; y < min(y1 + hb,h); y++){
@@ -195,19 +186,21 @@ bool cTB(Partition &P, double H_ini, double G_ini, int x1, int y1, int wb, int h
             }
         }
     }
-    /// on regarde si les superpixels modifiés sont connexes
-    bool conn = true;
-    for(int l=0; l<K and Kconcerned[l]; l++){
-        if(P.connexe(l)) conn = true;
-        else{
-            conn = false;
-            break;
-        }
-    }
+//    /// on regarde si les superpixels modifiés sont connexes
+//    bool conn = true;
+//    for(int l=0; l<K; l++){
+//        if(Kconcerned[l]){
+//            if(P.connexe(l)) conn = true;
+//            else{
+//                conn = false;
+//                break;
+//            }
+//        }
+//    }
     //calcul de H et G
     double H_fin=H(P);
     double G_fin=G(P);
-    if(H_fin+G_fin>H_ini+G_ini and conn)
+    if(H_fin+G_fin>H_ini+G_ini)
         return true;
     //rétablissemeent de P et c
     for (int x = x1; x < min(x1+wb,P.getw()); x++){
@@ -232,12 +225,6 @@ bool cTB(Partition &P, double H_ini, double G_ini, int x1, int y1, int wb, int h
             }
         }
     }
-    //mise à jour de Zc et Zb
-    for(int k=0;k<K;k++)
-        P.calcul_Zc(k);
-    for(int x=0;x<P.getw();x++)
-        for(int y=0;y<P.geth();y++)
-            P.calcul_Zb(x,y);
     return false;
 }
 

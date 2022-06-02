@@ -114,8 +114,8 @@ void hillClimbing(Partition &P){
             admission++;
             cout <<"Itération n° "<<i<<endl;
             cout <<"Taux d'admission : "<<float(admission)/i<<endl;
-            cout<<"Terme de couleur = "<<P.get_H()<<endl;
-            cout<<"Terme de frontière = "<<P.get_G()<<endl;
+            cout<<"Terme de couleur = "<<H(P)<<endl;
+            cout<<"Terme de frontière = "<<G(P)<<endl;
             cout<<endl;
         }
     }

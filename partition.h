@@ -6,7 +6,7 @@ using namespace std;
 
 // ******************** Paramètres ********************
 /// Taille des blocs de tranfert d'un superpixel à l'autre : R*R
-const int R = 24; // Taille recommandée : R = 5 pour 200 superpixels, R*R pixels par bloc
+const int R = 32; // Taille recommandée : R = 5 pour 200 superpixels, R*R pixels par bloc
 /// Taille des patchs pour le terme de frontière de l'énergie
 const int Np = 3; // Taille recommandée : Np = 3
 /// Nombre de superpixels sur une ligne
