@@ -16,7 +16,7 @@ double G(Partition &P);
 bool compareTransfertBlock(Partition &P, double H_ini, double G_ini, int x1, int y1, int wb, int hb, int k, int old_s[]);
 //si la nouvelle partition est meilleure: renvoie vrai
 
-bool cTB(Partition &P, double H_ini, double G_ini, int x1, int y1, int wb, int hb, int k, int old_s[]);
+bool cTB(Partition &P, double &H_ini, double &G_ini, int x1, int y1, int wb, int hb, int k, int old_s[]);
 //si la nouvelle partition est meilleure: renvoie vrai
 
 //s_i : superpixel donneur, s_f : receveur; return true si meilleure partition pour energie H

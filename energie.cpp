@@ -96,8 +96,8 @@ bool compare_fast_H(Partition &P, int x1, int y1, int wb, int hb, int s_i, int s
     // Cas du patch de taille 1 : O(1)
 
     if (Z_patch == 1){
-        int x = patch[0].x;
-        int y = patch[0].y;
+        int x = x1;
+        int y = y1;
         int r = P.get_Ir(x,y)/Nj;
         int g = P.get_Ig(x,y)/Nj;
         int b = P.get_Ib(x,y)/Nj;
@@ -153,7 +153,7 @@ bool compare_fast_H(Partition &P, int x1, int y1, int wb, int hb, int s_i, int s
     return false;
 }
 // compare transfert bloc
-bool cTB(Partition &P, double H_ini, double G_ini, int x1, int y1, int wb, int hb, int k, int old_s[]){
+bool cTB(Partition &P, double &H_ini, double &G_ini, int x1, int y1, int wb, int hb, int k, int old_s[]){
     int w = P.getw(),h = P.geth() ;
     int r,g,b;
     bool Kconcerned[K];//on optimise connexe en appliquant la fonction qu'au superpixels modifiées
@@ -200,8 +200,11 @@ bool cTB(Partition &P, double H_ini, double G_ini, int x1, int y1, int wb, int h
     //calcul de H et G
     double H_fin=H(P);
     double G_fin=G(P);
-    if(H_fin+G_fin>H_ini+G_ini)
+    if(H_fin+G_fin>H_ini+G_ini){
+        H_ini = H_fin;
+        G_ini = G_fin;
         return true;
+    }
     //rétablissemeent de P et c
     for (int x = x1; x < min(x1+wb,P.getw()); x++){
         for (int y = y1; y < min(y1 + hb,P.geth()); y++){
