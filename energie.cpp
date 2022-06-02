@@ -152,7 +152,7 @@ bool compare_fast_H(Partition &P, int x1, int y1, int wb, int hb, int s_i, int s
     }
     return false;
 }
-
+// compare transfert bloc
 bool cTB(Partition &P, double H_ini, double G_ini, int x1, int y1, int wb, int hb, int k, int old_s[]){
     int w = P.getw(),h = P.geth() ;
     int r,g,b;
